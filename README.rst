@@ -2,37 +2,20 @@
 
 |Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |ReadTheDocs|_
 
-.. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/project-template.svg?branch=master
-.. _Travis: https://travis-ci.org/scikit-learn-contrib/project-template
+.. |Travis| image:: https://travis-ci.org/hichamjanati/mutar.svg?branch=master
+.. _Travis: https://travis-ci.org/hichamjanati/mutar
 
 .. |AppVeyor| image:: https://ci.appveyor.com/api/projects/status/coy2qqaqr1rnnt5y/branch/master?svg=true
-.. _AppVeyor: https://ci.appveyor.com/project/glemaitre/project-template
+.. _AppVeyor: https://ci.appveyor.com/project/hichamjanati/mutar
 
-.. |Codecov| image:: https://codecov.io/gh/scikit-learn-contrib/project-template/branch/master/graph/badge.svg
-.. _Codecov: https://codecov.io/gh/scikit-learn-contrib/project-template
+.. |Codecov| image:: https://codecov.io/gh/hichamjanati/mutar/branch/master/graph/badge.svg
+.. _Codecov: https://codecov.io/gh/hichamjanati/mutar
 
-.. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/project-template.svg?style=shield&circle-token=:circle-token
-.. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/project-template/tree/master
+.. |CircleCI| image:: https://circleci.com/gh/hichamjanati/mutar.svg?style=shield&circle-token=:circle-token
+.. _CircleCI: https://circleci.com/gh/hichamjanati/mutar/tree/master
 
-.. |ReadTheDocs| image:: https://readthedocs.org/projects/mutar/badge/?version=latest
-.. _ReadTheDocs: https://mutar.readthedocs.io/en/latest/?badge=latest
+Multi-task Regression in Python
+===============================
 
-project-template - A template for scikit-learn contributions
-============================================================
 
-.. _scikit-learn: https://scikit-learn.org
-
-**project-template** is a template project for scikit-learn_ compatible
-extensions.
-
-It aids development of estimators that can be used in scikit-learn pipelines
-and (hyper)parameter search, while facilitating testing (including some API
-compliance), documentation, open source development, packaging, and continuous
-integration.
-
-.. _documentation: https://mutar.readthedocs.io/en/latest/quick_start.html
-
-Refer to the documentation_ to modify the template for your own scikit-learn
-contribution.
-
-*Thank you for cleanly contributing to the scikit-learn ecosystem!*
+* Dirty models (Jalali et al., 2010)
