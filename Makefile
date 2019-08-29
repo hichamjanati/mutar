@@ -61,4 +61,4 @@ doc:
 	make -C docs html-noplot
 
 test-manifest:
-	check-manifest --ignore examples,mutar/*/tests,.circlei;
+	check-manifest --ignore examples,mutar/*/tests,.circleci;
