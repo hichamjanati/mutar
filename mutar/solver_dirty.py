@@ -1,7 +1,7 @@
 """Solvers for multitask regression models."""
 import numpy as np
 import numba as nb
-from numba import (jit, float64, int64, boolean)
+from numba import (jit, float64, int64)
 from . import utils
 
 

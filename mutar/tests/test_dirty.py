@@ -1,9 +1,9 @@
 import pytest
-import numpy as np
+# import numpy as np
 
 from sklearn.datasets import load_boston
-from sklearn.utils.testing import assert_array_equal
-from sklearn.utils.testing import assert_allclose
+# from sklearn.utils.testing import assert_array_equal
+# from sklearn.utils.testing import assert_allclose
 
 from mutar import DirtyModel
 
