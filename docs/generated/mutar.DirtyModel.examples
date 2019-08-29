@@ -1,0 +1,22 @@
+
+
+Examples using ``mutar.DirtyModel``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="DirtyModel estimates a set of sparse coefficients for multiple regression models that share a f...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_dirty_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_dirty.py`
+
+.. raw:: html
+
+    </div>
+
+.. only:: not html
+
+    * :ref:`sphx_glr_auto_examples_plot_dirty.py`

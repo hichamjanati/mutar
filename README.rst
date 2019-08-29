@@ -1,38 +1,55 @@
 .. -*- mode: rst -*-
 
-|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |ReadTheDocs|_
+|Travis|_ |AppVeyor|_ |Codecov|_
 
-.. |Travis| image:: https://travis-ci.org/scikit-learn-contrib/project-template.svg?branch=master
-.. _Travis: https://travis-ci.org/scikit-learn-contrib/project-template
+.. |Travis| image:: https://travis-ci.com/hichamjanati/mutar.svg?branch=master
+.. _Travis: https://travis-ci.com/hichamjanati/mutar
 
 .. |AppVeyor| image:: https://ci.appveyor.com/api/projects/status/coy2qqaqr1rnnt5y/branch/master?svg=true
-.. _AppVeyor: https://ci.appveyor.com/project/glemaitre/project-template
+.. _AppVeyor: https://ci.appveyor.com/project/hichamjanati/mutar
 
-.. |Codecov| image:: https://codecov.io/gh/scikit-learn-contrib/project-template/branch/master/graph/badge.svg
-.. _Codecov: https://codecov.io/gh/scikit-learn-contrib/project-template
+.. |Codecov| image:: https://codecov.io/gh/hichamjanati/mutar/branch/master/graph/badge.svg
+.. _Codecov: https://codecov.io/gh/hichamjanati/mutar
 
-.. |CircleCI| image:: https://circleci.com/gh/scikit-learn-contrib/project-template.svg?style=shield&circle-token=:circle-token
-.. _CircleCI: https://circleci.com/gh/scikit-learn-contrib/project-template/tree/master
 
-.. |ReadTheDocs| image:: https://readthedocs.org/projects/mutar/badge/?version=latest
-.. _ReadTheDocs: https://mutar.readthedocs.io/en/latest/?badge=latest
+MuTaR: Multi-task Regression in Python
+======================================
 
-project-template - A template for scikit-learn contributions
-============================================================
+This is a collection of sparse models for multi-task regression. Mutar models
+fit regularized regression models on a sequence of related linear
+models (X_1, y_1) ... (X_k, y_k).
 
-.. _scikit-learn: https://scikit-learn.org
+Estimators
+----------
 
-**project-template** is a template project for scikit-learn_ compatible
-extensions.
+Mutar contains implementations of the following models:
 
-It aids development of estimators that can be used in scikit-learn pipelines
-and (hyper)parameter search, while facilitating testing (including some API
-compliance), documentation, open source development, packaging, and continuous
-integration.
+* GroupLasso: l1/l2 regularized regression with identical feature supports across tasks. `(Yuan and Lin, J. R Statistical Society 2006) <http://pages.stat.wisc.edu/~myuan/papers/glasso.final.pdf>`_
+* DirtyModel Generalization of the Group Lasso with a partial overlap of features using a composite l1/l2 and l1 regularization `(Jalali et al., NeurIPS 2010) <https://papers.nips.cc/paper/4125-a-dirty-model-for-multi-task-learning?>`_.
 
-.. _documentation: https://mutar.readthedocs.io/en/latest/quick_start.html
+Installation
+------------
 
-Refer to the documentation_ to modify the template for your own scikit-learn
-contribution.
+On a miniconda environment:
 
-*Thank you for cleanly contributing to the scikit-learn ecosystem!*
+::
+
+    git clone https://github.com/hichamjanati/mutar
+    cd mutar
+    python setup.py develop
+
+Otherwise, we recommend creating this minimal `conda env <https://raw.githubusercontent.com/hichamjanati/mutar/master/environment.yml>`_
+
+::
+
+    conda env create --file environment.yml
+    conda activate mutar-env
+    git clone https://github.com/hichamjanati/mutar
+    cd mutar
+    python setup.py develop
+
+
+Documentation
+-------------
+
+See the doc and use examples at the `MuTaR webpage <https://hichamjanati.github.io/mutar>`_.
