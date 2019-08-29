@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 # OS
-.DS_Store
+*.DS_Store
 
 # C extensions
 *.so
