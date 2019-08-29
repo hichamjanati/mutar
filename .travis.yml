@@ -18,7 +18,7 @@ matrix:
     - env: PYTHON_VERSION="3.7" NUMPY_VERSION="*" SCIPY_VERSION="*"
            SKLEARN_VERSION="nightly"
 
-install:
+before_install:
   # install miniconda
   - deactivate
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -27,8 +27,8 @@ install:
   - export PATH=$MINICONDA_PATH/bin:$PATH
   - conda update --yes conda
   # create the testing environment
-  - conda create -n testenv --yes python=$PYTHON_VERSION pip
-  - source activate testenv
+  - conda env create --file environment.yml python=${PYTHON_VERSION}
+  - source activate mutar-env
   - |
       if [ $SKLEARN_VERSION = "nightly" ]; then
           conda install --yes numpy==$NUMPY_VERSION scipy==$SCIPY_VERSION cython nose pytest pytest-cov
@@ -37,13 +37,18 @@ install:
       else
           conda install --yes numpy==$NUMPY_VERSION scipy==$SCIPY_VERSION scikit-learn==$SKLEARN_VERSION cython nose pytest pytest-cov
       fi
+  - conda install --yes --quiet pytest pytest-cov coverage
+  - pip install flake8 check-manifest
   - pip install codecov
-  - pip install .
+
+install:
+  - python setup.py build_ext --inplace
+  - pip install -e .
 
 script:
-  - mkdir for_test
-  - cd for_test
-  - pytest -v --cov=mutar --pyargs mutar
-
+  - pytest -lv --cov-report term-missing mtw --cov=mtw --cov-config .coveragerc
+  - make
+  - flake8 --count mtw
 after_success:
-  - codecov
+  - cp .coverage $TRAVIS_BUILD_DIR
+  - codecov --root $TRAVIS_BUILD_DIR || echo "codecov upload failed"

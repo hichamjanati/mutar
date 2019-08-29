@@ -12,8 +12,8 @@ jobs:
             chmod +x miniconda.sh && ./miniconda.sh -b -p ~/miniconda
             export PATH="~/miniconda/bin:$PATH"
             conda update --yes --quiet conda
-            conda create -n testenv --yes --quiet python=3
-            source activate testenv
+            conda env create --file environment.yml python=3
+            source activate mutar-env
             conda install --yes pip numpy scipy scikit-learn matplotlib sphinx sphinx_rtd_theme numpydoc pillow
             pip install sphinx-gallery
             pip install .
