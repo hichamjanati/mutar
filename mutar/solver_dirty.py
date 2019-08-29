@@ -1,7 +1,7 @@
 """Solvers for multitask regression models."""
 import numpy as np
 import numba as nb
-from numba import (jit, float64, int64)
+from numba import (jit, float64, int64, boolean)
 from . import utils
 
 
@@ -64,11 +64,11 @@ output_type = nb.types.Tuple((float64[::1, :], float64[::1, :],
                               float64[:, :], float64, int64))
 
 
-# @jit(output_type(float64[::1, :, :], float64[:, :], float64[:, :],
-#                  float64[::1, :], float64[::1, :],
-#                  float64[:], float64, float64, int64,
-#                  float64, boolean),
-#      nopython=True, cache=True)
+@jit(output_type(float64[::1, :, :], float64[:, :], float64[:, :],
+                 float64[::1, :], float64[::1, :],
+                 float64[:], float64, float64, int64,
+                 float64, boolean),
+     nopython=True, cache=True)
 def _solver_dirty(X, y, R, coef_shared_, coef_specific_, Ls, alpha, beta,
                   maxiter, tol, verbose):
     """Perform GFB with BCD to solve Multi-task Dirty group lasso."""
