@@ -12,11 +12,9 @@ matrix:
     - env: PYTHON_VERSION="3.5" NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1"
            SKLEARN_VERSION="0.19.1"
     - env: PYTHON_VERSION="3.6" NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1"
-           SKLEARN_VERSION="0.20.3"
+           SKLEARN_VERSION="0.19.1"
     - env: PYTHON_VERSION="3.7" NUMPY_VERSION="*" SCIPY_VERSION="*"
            SKLEARN_VERSION="*"
-    - env: PYTHON_VERSION="3.7" NUMPY_VERSION="*" SCIPY_VERSION="*"
-           SKLEARN_VERSION="nightly"
 
 before_install:
   # install miniconda
@@ -25,18 +23,10 @@ before_install:
   - MINICONDA_PATH=/home/travis/miniconda
   - chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
   - export PATH=$MINICONDA_PATH/bin:$PATH
-  - conda update --yes conda
+  - conda update --yes --quiet conda
   # create the testing environment
   - conda env create --file environment.yml python=${PYTHON_VERSION}
   - source activate mutar-env
-  - |
-      if [ $SKLEARN_VERSION = "nightly" ]; then
-          conda install --yes numpy==$NUMPY_VERSION scipy==$SCIPY_VERSION cython nose pytest pytest-cov
-          # install nightly wheels
-          pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
-      else
-          conda install --yes numpy==$NUMPY_VERSION scipy==$SCIPY_VERSION scikit-learn==$SKLEARN_VERSION cython nose pytest pytest-cov
-      fi
   - conda install --yes --quiet pytest pytest-cov coverage
   - pip install flake8 check-manifest
   - pip install codecov
