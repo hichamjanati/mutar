@@ -1,6 +1,6 @@
 .. -*- mode: rst -*-
 
-|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |ReadTheDocs|_
+|Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_
 
 .. |Travis| image:: https://travis-ci.org/hichamjanati/mutar.svg?branch=master
 .. _Travis: https://travis-ci.org/hichamjanati/mutar
