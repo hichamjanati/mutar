@@ -36,9 +36,9 @@ install:
   - pip install -e .
 
 script:
-  - pytest -lv --cov-report term-missing mtw --cov=mtw --cov-config .coveragerc
+  - pytest -lv --cov-report term-missing mutar --cov=mutar --cov-config .coveragerc
   - make
-  - flake8 --count mtw
+  - flake8 --count mutar
 after_success:
   - cp .coverage $TRAVIS_BUILD_DIR
   - codecov --root $TRAVIS_BUILD_DIR || echo "codecov upload failed"
