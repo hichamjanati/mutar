@@ -10,10 +10,12 @@ __pycache__/
 *.so
 
 # scikit-learn specific
-doc/_build/
-doc/auto_examples/
-doc/modules/generated/
-doc/datasets/generated/
+docs/_build/
+docs/auto_examples/
+docs/modules/generated/
+docs/datasets/generated/
+docs/_images
+docs/generated
 
 # Distribution / packaging
 

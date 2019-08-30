@@ -1,63 +1,64 @@
-# Minimal makefile for Sphinx documentation
-#
+# simple makefile to simplify repetetive build env management tasks under posix
 
-# You can set these variables from the command line, and also
-# from the environment for the first two.
-SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
-SOURCEDIR     = .
-BUILDDIR      = ../../docs/mutar-docs/
-PDFBUILDDIR   = /tmp
-PDF           = ../manual.pdf
+PYTHON ?= python
+CYTHON ?= cython
+PYTESTS ?= pytest
 
+CTAGS ?= ctags
 
-.PHONY: help
-help:
-	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  html-noplot to make standalone HTML files, without plotting anything"
-	@echo "  html       to make standalone HTML files"
-	@echo "  dirhtml    to make HTML files named index.html in directories"
-	@echo "  singlehtml to make a single large HTML file"
-	@echo "  pickle     to make pickle files"
-	@echo "  htmlhelp   to make HTML files and a HTML help project"
-	@echo "  qthelp     to make HTML files and a qthelp project"
-	@echo "  latex      to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
-	@echo "  latexpdf   to make LaTeX files and run them through pdflatex"
-	@echo "  changes    to make an overview of all changed/added/deprecated items"
-	@echo "  linkcheck  to check all external links for integrity"
-	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
-	@echo "  coverage   to run coverage check of the documentation (if enabled)"
-	@echo "  install    to make the html and push it online"
+all: clean inplace test
 
-.PHONY: clean
+clean-pyc:
+	find . -name "*.pyc" | xargs rm -f
+	find . -name "__pycache__" | xargs rm -rf
 
-clean:
-	rm -rf $(BUILDDIR)html/auto_examples
-	rm -rf $(BUILDDIR)html/generated
-	rm -rf $(BUILDDIR)html/_modules
-	rm -rf $(BUILDDIR)html/_images
-	rm -rf auto_examples/*
-	rm -rf generated/*
-# Put it first so that "make" without argument is like "make help".
-help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+clean-so:
+	find . -name "*.so" | xargs rm -f
+	find . -name "*.pyd" | xargs rm -f
+	find . -name "*.cpp" | xargs rm -f
 
+clean-build:
+	rm -rf build
 
-latexpdf:
-	@$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(PDFBUILDDIR)/latex
-	#                                          ^^^
-	@echo "Running LaTeX files through pdflatex..."
-	make -C $(PDFBUILDDIR)/latex all-pdf
-	#         ^^^
-	cp $(PDFBUILDDIR)/latex/*.pdf $(PDF)
-	#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-	@echo "pdflatex finished; see $(PDF)"
+clean-ctags:
+	rm -f tags
 
+clean: clean-build clean-pyc clean-so clean-ctags
 
-commithtml: html
-	cd $(BUILDDIR)html; git add . ; git commit -m "rebuilt docs"; git push origin gh-pages
+in: inplace # just a shortcut
+inplace:
+	$(PYTHON) setup.py build_ext -i
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+test-code:
+	$(PYTESTS) mutar
+
+test-doc:
+	$(PYTESTS) $(shell find docs -name '*.rst' | sort)
+
+test-coverage:
+	rm -rf coverage .coverage
+	$(PYTESTS) mutar --cov=mutar --cov-report html:coverage
+
+test: test-code test-manifest
+
+trailing-spaces:
+	find . -name "*.py" | xargs perl -pi -e 's/[ \t]*$$//'
+
+cython:
+	find -name "*.pyx" | xargs $(CYTHON)
+
+ctags:
+	# make tags for symbol based navigation in emacs and vim
+	# Install with: sudo apt-get install exuberant-ctags
+	$(CTAGS) -R *
+
+.PHONY : doc-plot
+doc-plot:
+	make -C docs html
+
+.PHONY : doc
+doc:
+	make -C docs html-noplot
+
+test-manifest:
+	check-manifest --ignore docs,mutar/*/tests,.circleci,.circleci/*;
