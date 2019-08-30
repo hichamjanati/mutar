@@ -1,6 +1,7 @@
 docs/auto_examples
 docs/generated
 .makedoc
+docs/auto_examples/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
