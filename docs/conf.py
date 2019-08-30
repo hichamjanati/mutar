@@ -164,7 +164,7 @@ html_theme_options = {
         ("API", "api"),
         ("GitHub", "https://github.com/hichamjanati/mutar", True)
     ],
-    'bootswatch_theme': "lumen"
+    'bootswatch_theme': "sandstone"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -328,7 +328,6 @@ intersphinx_mapping = {
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org/', None),
     'joblib': ('https://joblib.readthedocs.io/en/latest', None),
-    'numba': ('https://numba.pydata.org/', None),
     'sklearn': ('https://scikit-learn.org/stable/', None)
 
 }
@@ -345,8 +344,7 @@ sphinx_gallery_conf = {
     'doc_module': 'mutar',
     'reference_url': dict(mutar=None),
     'examples_dirs': examples_dirs,
-    'subsection_order': ExplicitOrder(['../examples/plot_dirty.py',
-                                       '../examples/plot_group_lasso.py']),
+    'subsection_order': ExplicitOrder(['../examples/plot_group_lasso.py']),
     'gallery_dirs': gallery_dirs,
     'plot_gallery': 'True',  # Avoid annoying Unicode/bool default warning
     'thumbnail_size': (160, 112),

@@ -25,12 +25,8 @@ fit regularized regression models on a sequence of related data (X_1, y_1) ...
 .. _DirtyModel: https://papers.nips.cc/paper/4125-a-dirty-model-for-multi-task-learning
 .. _GroupLasso: http://pages.stat.wisc.edu/~myuan/papers/glasso.final.pdf
 
-* GroupLasso_: l1/l2 regularized regression with identical feature supports across tasks.
-(Yuan and Lin, J. R Statistical Society 2006)
-
-* DirtyModel_ Generalization of the Group Lasso with a partial overlap of features using a
-composite l1/l2 and l1 regularization (Jalali et al., NeurIPS 2010).
-
+* GroupLasso_: l1/l2 regularized regression with identical feature supports across tasks. (Yuan and Lin, J. R Statistical Society 2006)
+* DirtyModel_ Generalization of the Group Lasso with a partial overlap of features using a composite l1/l2 and l1 regularization (Jalali et al., NeurIPS 2010).
 
 
 Installation
@@ -55,7 +51,7 @@ Otherwise, we recommend creating this minimal `conda env <https://raw.githubuser
     python setup.py develop
 
 
-Documentation
--------------
+Examples
+--------
 
-For examples, see `the documentation <https://hichamjanati.github.io/mutar/>`_.
+See `the examples <https://hichamjanati.github.io/mutar/auto_examples>`_.

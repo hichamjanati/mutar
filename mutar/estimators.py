@@ -17,9 +17,11 @@ class DirtyModel(BaseEstimator, RegressorMixin):
 
         (1 / (2 * n_samples)) * ||Y - X(W_1 + W_2)||^2_Fro + alpha * ||W_1||_21
         + beta * ||W_2||_1
+
     Where::
 
         ||W||_21 = \\sum_i \\sqrt{\\sum_j w_ij^2}
+
         i.e. the sum of norm of each row.
     and::
 
