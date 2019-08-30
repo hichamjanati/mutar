@@ -3,7 +3,7 @@
 |Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_
 
 .. |Travis| image:: https://travis-ci.com/hichamjanati/mutar.svg?branch=master
-.. _Travis: https://travis-ci.org/hichamjanati/mutar
+.. _Travis: https://travis-ci.com/hichamjanati/mutar
 
 .. |AppVeyor| image:: https://ci.appveyor.com/api/projects/status/coy2qqaqr1rnnt5y/branch/master?svg=true
 .. _AppVeyor: https://ci.appveyor.com/project/hichamjanati/mutar
