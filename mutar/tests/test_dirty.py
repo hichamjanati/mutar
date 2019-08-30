@@ -1,28 +1,45 @@
 import pytest
-# import numpy as np
+import numpy as np
 
-from sklearn.datasets import load_boston
+from itertools import product
+
 # from sklearn.utils.testing import assert_array_equal
-# from sklearn.utils.testing import assert_allclose
+from sklearn.utils.testing import assert_allclose
 
-from mutar import DirtyModel
-
-
-@pytest.fixture
-def data():
-    X, y = load_boston(return_X_y=True)
-    X = X[:20]
-    y = y[:20]
-    return X, y
+from mutar import DirtyModel, GroupLasso
 
 
-def test_dirty(data):
-    est = DirtyModel(alpha=0.1, beta=0.1)
+@pytest.mark.parametrize("fit_intercept, alpha, beta",
+                         product([False, True], [0.1, 0.5], [0.1, 0.5]))
+def test_dirty(data, fit_intercept, alpha, beta):
 
     X, y = data
-    X = [X, X]
-    y = [y, y]
+
+    Xty = np.array([xx.T.dot(yy) for xx, yy in zip(X, y)])
+    alpha_max = np.linalg.norm(Xty, axis=0).max()
+    beta_max = abs(Xty).max()
+    alpha *= alpha_max
+    beta *= beta_max
+    est = DirtyModel(alpha=alpha, beta=beta,
+                     fit_intercept=fit_intercept)
     est.fit(X, y)
     assert hasattr(est, 'is_fitted_')
+    if est.alpha <= est.beta:
+        assert_allclose(est.coef_specific_, 0.)
+    elif est.alpha > len(X) ** 0.5 * est.beta:
+        assert_allclose(est.coef_shared_, 0.)
 
-    # assert_array_equal(y_pred, np.ones(X.shape[0], dtype=np.int64))
+
+@pytest.mark.parametrize("fit_intercept, alpha",
+                         product([False, True], [0.1, 0.5, 0.95]))
+def test_grouplasso(data, fit_intercept, alpha):
+
+    X, y = data
+
+    Xty = np.array([xx.T.dot(yy) for xx, yy in zip(X, y)])
+    alpha_max = np.linalg.norm(Xty, axis=0).max()
+    alpha *= alpha_max
+    est = GroupLasso(alpha=alpha, fit_intercept=fit_intercept)
+    est.fit(X, y)
+    assert hasattr(est, 'is_fitted_')
+    assert_allclose(est.coef_specific_, 0.)
