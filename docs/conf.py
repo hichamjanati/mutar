@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# project-template documentation build configuration file, created by
+# MuTaR documentation build configuration file, created by
 # sphinx-quickstart on Mon Jan 18 14:44:12 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -78,7 +78,7 @@ source_suffix = '.rst'
 #source_encoding = 'utf-8-sig'
 
 # Generate the plots for the gallery
-plot_gallery = 'True'
+plot_gallery = True
 
 # The master toctree document.
 master_doc = 'index'
@@ -130,7 +130,7 @@ exclude_patterns = ['_build', '_templates']
 pygments_style = 'sphinx'
 
 # Custom style
-# html_style = 'css/project-template.css'
+# html_style = 'css/MuTaR.css'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -237,7 +237,7 @@ html_static_path = ['_static', '_images']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'mutar-doc'
+htmlhelp_basename = 'MuTaRdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -257,7 +257,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'mutar.tex', u'MuTaR Documentation',
+  ('index', 'MuTaR.tex', u'MuTaR Documentation',
    u'Hicham Janati', 'manual'),
 ]
 
@@ -287,7 +287,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'mutar', u'MuTaR Documentation',
+    ('index', 'MuTaR', u'MuTaR Documentation',
      [u'Hicham Janati'], 1)
 ]
 
@@ -301,8 +301,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'project-template', u'project-template Documentation',
-   u'Hicham Janati', 'mutar', 'Multi-task regression in Python',
+  ('index', 'MuTaR', u'MuTaR Documentation',
+   u'Hicham Janati', 'MuTaR', 'Multi-task Regression in Python',
    'Machine learning'),
 ]
 
@@ -328,8 +328,6 @@ intersphinx_mapping = {
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org/', None),
     'joblib': ('https://joblib.readthedocs.io/en/latest', None),
-    'sklearn': ('https://scikit-learn.org/stable/', None)
-
 }
 
 ##############################################################################
@@ -338,13 +336,15 @@ intersphinx_mapping = {
 examples_dirs = ['../examples']
 gallery_dirs = ['auto_examples']
 
-scrapers = ('matplotlib')
+scrapers = ('matplotlib',)
+report_scraper = None
 
 sphinx_gallery_conf = {
     'doc_module': 'mutar',
     'reference_url': dict(mutar=None),
     'examples_dirs': examples_dirs,
-    'subsection_order': ExplicitOrder(['../examples/plot_group_lasso.py']),
+    'subsection_order': ExplicitOrder([
+                                       '../examples/plot_group_lasso.py']),
     'gallery_dirs': gallery_dirs,
     'plot_gallery': 'True',  # Avoid annoying Unicode/bool default warning
     'thumbnail_size': (160, 112),
