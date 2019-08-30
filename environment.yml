@@ -1,7 +1,0 @@
-name: mutar-env
-dependencies:
-  - numpy
-  - scipy
-  - scikit-learn
-  - numba
-  - joblib
