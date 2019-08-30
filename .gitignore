@@ -9,13 +9,10 @@ __pycache__/
 # C extensions
 *.so
 
-# scikit-learn specific
-docs/_build/
-docs/auto_examples/
-docs/modules/generated/
-docs/datasets/generated/
-docs/_images
+# docs
+docs/auto_examples
 docs/generated
+.makedoc
 
 # Distribution / packaging
 
