@@ -60,14 +60,15 @@ class DirtyModel(BaseEstimator, RegressorMixin):
     >>> X = np.array([[[3, 1], [2, 0], [1, 0]],\
                      [[0, 2], [-1, 3], [1, -2]]], dtype=float)
     >>> coef = np.array([[1., 1.], [0., -1]])
-    >>> y = [x.dot(c) for x, c in zip(X, coef.T)]
-    >>> dirty = DirtyModel(alpha=0.5, beta=0.4).fit(X, y)
+    >>> y = np.array([x.dot(c) for x, c in zip(X, coef.T)])
+    >>> y += 0.1
+    >>> dirty = DirtyModel(alpha=0.15, beta=0.12).fit(X, y)
     >>> print(dirty.coef_shared_)
-    [[ 0.36592964  0.27286518]
-     [ 0.         -0.        ]]
+    [[ 0.4652447  0.3465437]
+     [ 0.        -0.       ]]
     >>> print(dirty.coef_specific_)
-    [[ 0.43386498  0.        ]
-     [ 0.         -1.23111958]]
+    [[ 0.35453532  0.        ]
+     [ 0.         -1.20766296]]
 
     """
     def __init__(self, alpha=1., beta=1., fit_intercept=True,
@@ -195,8 +196,8 @@ class GroupLasso(DirtyModel):
     >>> y = X.sum(axis=2) + 2
     >>> grouplasso = GroupLasso().fit(X, y)
     >>> print(grouplasso.coef_shared_)
-    [[1.4734835 1.4734835]
-     [0.        0.       ]]
+    [[1.42045049 1.42045049]
+     [0.         0.        ]]
     >>> print(grouplasso.coef_specific_)
     [[0. 0.]
      [0. 0.]]

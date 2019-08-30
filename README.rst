@@ -30,3 +30,32 @@ fit regularized regression models on a sequence of related data (X_1, y_1) ...
 
 * DirtyModel_ Generalization of the Group Lasso with a partial overlap of features using a
 composite l1/l2 and l1 regularization (Jalali et al., NeurIPS 2010).
+
+
+
+Installation
+------------
+
+On a miniconda environment:
+
+::
+
+    git clone https://github.com/hichamjanati/mutar
+    cd groupmne
+    python setup.py develop
+
+Otherwise, we recommend creating this minimal `conda env <https://raw.githubusercontent.com/hichamjanati/mutar/master/environment.yml>`_
+
+::
+
+    conda env create --file environment.yml
+    conda activate mutar-env
+    git clone https://github.com/hichamjanati/mutar
+    cd mutar
+    python setup.py develop
+
+
+Documentation
+-------------
+
+For examples, see `the documentation <https://hichamjanati.github.io/mutar/>`_.

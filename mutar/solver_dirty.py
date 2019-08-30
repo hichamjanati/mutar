@@ -36,6 +36,8 @@ def _solver_dirty(X, R, coef_shared_, coef_specific_, Ls, alpha, beta,
     n_tasks = len(X)
     n_samples, n_features = X[0].shape
     theta = coef_shared_ + coef_specific_
+    alpha *= n_samples
+    beta *= n_samples
 
     # dg = 1.
     for i in range(maxiter):

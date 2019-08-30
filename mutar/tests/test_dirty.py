@@ -14,12 +14,12 @@ from mutar import DirtyModel, GroupLasso
 def test_dirty(data, fit_intercept, alpha, beta):
 
     X, y = data
-
+    n_samples = y.shape[1]
     Xty = np.array([xx.T.dot(yy) for xx, yy in zip(X, y)])
     alpha_max = np.linalg.norm(Xty, axis=0).max()
     beta_max = abs(Xty).max()
-    alpha *= alpha_max
-    beta *= beta_max
+    alpha *= alpha_max / n_samples
+    beta *= beta_max / n_samples
     est = DirtyModel(alpha=alpha, beta=beta,
                      fit_intercept=fit_intercept)
     est.fit(X, y)
@@ -35,10 +35,11 @@ def test_dirty(data, fit_intercept, alpha, beta):
 def test_grouplasso(data, fit_intercept, alpha):
 
     X, y = data
+    n_samples = y.shape[1]
 
     Xty = np.array([xx.T.dot(yy) for xx, yy in zip(X, y)])
     alpha_max = np.linalg.norm(Xty, axis=0).max()
-    alpha *= alpha_max
+    alpha *= alpha_max / n_samples
     est = GroupLasso(alpha=alpha, fit_intercept=fit_intercept)
     est.fit(X, y)
     assert hasattr(est, 'is_fitted_')
