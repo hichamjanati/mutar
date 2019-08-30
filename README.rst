@@ -11,8 +11,6 @@
 .. |Codecov| image:: https://codecov.io/gh/hichamjanati/mutar/branch/master/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/hichamjanati/mutar
 
-.. |CircleCI| image:: https://circleci.com/gh/hichamjanati/mutar.svg?style=shield&circle-token=:circle-token
-.. _CircleCI: https://circleci.com/gh/hichamjanati/mutar/tree/master
 
 MuTaR: Multi-task Regression in Python
 ======================================
