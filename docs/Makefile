@@ -6,7 +6,7 @@
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
-BUILDDIR      = ../../docs/groupmne-docs/
+BUILDDIR      = ../../docs/mutar-docs/
 PDFBUILDDIR   = /tmp
 PDF           = ../manual.pdf
 
