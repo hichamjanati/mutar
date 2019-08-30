@@ -164,7 +164,7 @@ html_theme_options = {
         ("API", "api"),
         ("GitHub", "https://github.com/hichamjanati/mutar", True)
     ],
-    'bootswatch_theme': "sandstone"
+    'bootswatch_theme': "cerulean"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
