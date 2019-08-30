@@ -78,7 +78,7 @@ source_suffix = '.rst'
 #source_encoding = 'utf-8-sig'
 
 # Generate the plots for the gallery
-plot_gallery = True
+plot_gallery = 'True'
 
 # The master toctree document.
 master_doc = 'index'
@@ -164,7 +164,7 @@ html_theme_options = {
         ("API", "api"),
         ("GitHub", "https://github.com/hichamjanati/mutar", True)
     ],
-    'bootswatch_theme': "lux"
+    'bootswatch_theme': "lumen"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.

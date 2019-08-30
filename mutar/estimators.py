@@ -14,13 +14,16 @@ class DirtyModel(BaseEstimator, RegressorMixin):
     """ DirtyModel estimator with L1 and L1/L2 mixed-norm as regularizers.
 
     The optimization objective for Dirty models is::
+
         (1 / (2 * n_samples)) * ||Y - X(W_1 + W_2)||^2_Fro + alpha * ||W_1||_21
         + beta * ||W_2||_1
     Where::
-        ||W||_21 = \\sum_i \\sqrt{\\sum_j w_{ij}^2}
+
+        ||W||_21 = \\sum_i \\sqrt{\\sum_j w_ij^2}
         i.e. the sum of norm of each row.
     and::
-        ||W||_1 = \\sum_i \\sum_j |w_{ij}|
+
+        ||W||_1 = \\sum_i \\sum_j |w_ij|
 
     Parameters
     ----------
@@ -155,7 +158,7 @@ class GroupLasso(DirtyModel):
     The optimization objective for Dirty models is::
         (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha * ||W||_21
     Where::
-        ||W||_21 = \\sum_i \\sqrt{\\sum_j w_{ij}^2}
+        ||W||_21 = \\sum_i \\sqrt{\\sum_j w_ij^2}
         i.e. the sum of norm of each row.
 
     Parameters

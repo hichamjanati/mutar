@@ -1,0 +1,22 @@
+
+
+Examples using ``mutar.GroupLasso``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The GroupLasso estimates a set of sparse coefficients for multiple regression models that share...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_grouplasso_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_grouplasso.py`
+
+.. raw:: html
+
+    </div>
+
+.. only:: not html
+
+    * :ref:`sphx_glr_auto_examples_plot_grouplasso.py`
