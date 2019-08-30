@@ -17,5 +17,7 @@
 
   auto_examples/index
 
+|
+|
 
 .. include:: ../README.rst
