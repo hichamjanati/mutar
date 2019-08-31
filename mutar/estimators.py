@@ -287,7 +287,7 @@ class GroupLasso(DirtyModel):
 
     Examples
     --------
-    >>> from mutar import DirtyModel
+    >>> from mutar import GroupLasso
     >>> import numpy as np
     >>> X = np.array([[[3, 1], [1, 0], [1, 0]],\
                      [[0, 2], [2, 3], [2, 3]]], dtype=float)
@@ -354,20 +354,18 @@ class IndRewLasso(MultitaskRegression):
 
     Examples
     --------
-    >>> from mutar import DirtyModel
+    >>> from mutar import IndRewLasso
     >>> import numpy as np
     >>> X = np.array([[[3, 1], [2, 0], [1, 0]],\
                      [[0, 2], [-1, 3], [1, -2]]], dtype=float)
     >>> coef = np.array([[1., 1.], [0., -1]])
     >>> y = np.array([x.dot(c) for x, c in zip(X, coef.T)])
     >>> y += 0.1
-    >>> dirty = DirtyModel(alpha=0.15, beta=0.12).fit(X, y)
-    >>> print(dirty.coef_shared_)
-    [[ 0.4652447  0.3465437]
-     [ 0.        -0.       ]]
-    >>> print(dirty.coef_specific_)
-    [[ 0.35453532  0.        ]
-     [ 0.         -1.20766296]]
+    >>> alpha = [0.1, 0.2]
+    >>> relasso = IndRewLasso(alpha=alpha).fit(X, y)
+    >>> print(relasso.coef_)
+    [[ 0.92188134  0.        ]
+     [ 0.         -1.33862186]]
 
     """
     def __init__(self, alpha=1., fit_intercept=True, max_iter=2000,
@@ -453,20 +451,18 @@ class IndLasso(IndRewLasso):
 
     Examples
     --------
-    >>> from mutar import DirtyModel
+    >>> from mutar import IndLasso
     >>> import numpy as np
     >>> X = np.array([[[3, 1], [2, 0], [1, 0]],\
                      [[0, 2], [-1, 3], [1, -2]]], dtype=float)
     >>> coef = np.array([[1., 1.], [0., -1]])
     >>> y = np.array([x.dot(c) for x, c in zip(X, coef.T)])
     >>> y += 0.1
-    >>> dirty = DirtyModel(alpha=0.15, beta=0.12).fit(X, y)
-    >>> print(dirty.coef_shared_)
-    [[ 0.4652447  0.3465437]
-     [ 0.        -0.       ]]
-    >>> print(dirty.coef_specific_)
-    [[ 0.35453532  0.        ]
-     [ 0.         -1.20766296]]
+    >>> alpha = [0.1, 0.2]
+    >>> relasso = IndLasso(alpha=alpha).fit(X, y)
+    >>> print(relasso.coef_)
+    [[ 0.85        0.        ]
+     [ 0.         -1.31428571]]
 
     """
     def __init__(self, alpha=1., fit_intercept=True, max_iter=2000,
