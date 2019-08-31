@@ -15,9 +15,9 @@
 MuTaR: Multi-task Regression in Python
 ======================================
 
-This is a collection of sparse models for multi-task regression. Mutar models
+MuTaR is a collection of sparse models for multi-task regression. Mutar models
 fit regularized regression models on a sequence of related linear
-models (X_1, y_1) ... (X_k, y_k).
+models (X_1, y_1) ... (X_k, y_k) and follow `scikit-learn's <http://scikit-learn.org>`_ API.
 
 Estimators
 ----------
@@ -54,6 +54,32 @@ Otherwise, we recommend creating this minimal `conda env <https://raw.githubuser
     git clone https://github.com/hichamjanati/mutar
     cd mutar
     python setup.py develop
+
+Example
+-------
+
+.. code:: python
+
+    >>> import numpy as np
+    >>> from mutar import GroupLasso
+    >>> # create some X (n_tasks, n_samples, n_features)
+    >>> X = np.array([[[3., 1.], [2., 0.]], [[0., 2.], [-1., 3.]]])
+    >>> print(X.shape)
+    (2, 2, 2)
+    >>> # and target y (n_tasks, n_samples)
+    >>> y = np.array([[-3., 1.], [1., -2.]])
+    >>> print(y.shape)
+    (2, 2)
+    >>> gl = GroupLasso(alpha=1.)
+    >>> coef = gl.fit(X, y).coef_
+    >>> print(coef.shape)
+    (2, 2)
+    >>> # coefficients (n_features, n_tasks)
+    >>> # share the same support
+    >>> print(coef)
+    [[-0.8  0.6]
+     [-0.  -0. ]]
+
 
 
 Documentation
