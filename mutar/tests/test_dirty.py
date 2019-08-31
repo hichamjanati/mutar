@@ -5,13 +5,15 @@ from itertools import product
 
 # from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_allclose
+from sklearn.linear_model import MultiTaskLasso
 
 from mutar import DirtyModel, GroupLasso
 
 
-@pytest.mark.parametrize("fit_intercept, alpha, beta",
-                         product([False, True], [0.1, 0.5], [0.1, 0.5]))
-def test_dirty(data, fit_intercept, alpha, beta):
+@pytest.mark.parametrize("fit_intercept, normalize, alpha, beta",
+                         product([False, True], [False, True],
+                                 [0.1, 0.5], [0.1, 0.5]))
+def test_dirty(data, fit_intercept, normalize, alpha, beta):
 
     X, y = data
     n_samples = y.shape[1]
@@ -21,7 +23,7 @@ def test_dirty(data, fit_intercept, alpha, beta):
     alpha *= alpha_max / n_samples
     beta *= beta_max / n_samples
     est = DirtyModel(alpha=alpha, beta=beta,
-                     fit_intercept=fit_intercept)
+                     fit_intercept=fit_intercept, normalize=normalize)
     est.fit(X, y)
     assert hasattr(est, 'is_fitted_')
     if est.alpha <= est.beta:
@@ -35,9 +37,10 @@ def test_dirty(data, fit_intercept, alpha, beta):
     assert_allclose(r2, scores)
 
 
-@pytest.mark.parametrize("fit_intercept, alpha",
-                         product([False, True], [0.1, 0.5, 0.95]))
-def test_grouplasso(data, fit_intercept, alpha):
+@pytest.mark.parametrize("fit_intercept, normalize, alpha",
+                         product([False, True], [False, True],
+                                 [0.1, 0.5, 0.95]))
+def test_grouplasso(data, fit_intercept, normalize, alpha):
 
     X, y = data
     n_samples = y.shape[1]
@@ -45,7 +48,8 @@ def test_grouplasso(data, fit_intercept, alpha):
     Xty = np.array([xx.T.dot(yy) for xx, yy in zip(X, y)])
     alpha_max = np.linalg.norm(Xty, axis=0).max()
     alpha *= alpha_max / n_samples
-    est = GroupLasso(alpha=alpha, fit_intercept=fit_intercept)
+    est = GroupLasso(alpha=alpha, fit_intercept=fit_intercept,
+                     normalize=normalize)
     est.fit(X, y)
     assert hasattr(est, 'is_fitted_')
     assert_allclose(est.coef_specific_, 0.)
@@ -54,3 +58,26 @@ def test_grouplasso(data, fit_intercept, alpha):
     r2 = 1 - (est.residuals_ ** 2).mean(1) / var_y
     scores = est.score(X, y)
     assert_allclose(r2, scores)
+
+
+@pytest.mark.parametrize("fit_intercept, normalize, alpha",
+                         product([False, True], [False, True],
+                                 [0.1, 0.5, 0.95]))
+def test_multitasklasso(data, fit_intercept, normalize, alpha):
+
+    X, y = data
+    X = [X[0], X[0]]
+    n_samples = y.shape[1]
+
+    Xty = np.array([xx.T.dot(yy) for xx, yy in zip(X, y)])
+    alpha_max = np.linalg.norm(Xty, axis=0).max()
+    alpha *= alpha_max / n_samples
+    est = GroupLasso(alpha=alpha, fit_intercept=fit_intercept,
+                     normalize=normalize)
+    est.fit(X, y)
+    assert hasattr(est, 'is_fitted_')
+
+    mtlasso = MultiTaskLasso(alpha=alpha, fit_intercept=fit_intercept,
+                             normalize=normalize)
+    mtlasso.fit(X[0], y.T)
+    assert_allclose(est.coef_, mtlasso.coef_.T)

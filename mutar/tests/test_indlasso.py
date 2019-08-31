@@ -6,9 +6,12 @@ from sklearn.utils.testing import assert_allclose
 
 from mutar import IndLasso, IndRewLasso
 
+from itertools import product
 
-@pytest.mark.parametrize("fit_intercept", [False, True])
-def test_indlasso(data, fit_intercept):
+
+@pytest.mark.parametrize("fit_intercept, normalize", product([False, True],
+                         [False, True]))
+def test_indlasso(data, fit_intercept, normalize):
 
     X, y = data
     n_samples = y.shape[1]
@@ -16,8 +19,8 @@ def test_indlasso(data, fit_intercept):
     alpha_max = abs(Xty).max() / n_samples
     alpha = alpha_max * np.ones(len(X)) * 0.2
 
-    est = IndLasso(alpha=alpha,
-                   fit_intercept=fit_intercept)
+    est = IndLasso(alpha=alpha, fit_intercept=fit_intercept,
+                   normalize=normalize)
     est.fit(X, y)
     assert hasattr(est, 'is_fitted_')
 
@@ -28,8 +31,9 @@ def test_indlasso(data, fit_intercept):
     assert_allclose(r2, scores)
 
 
-@pytest.mark.parametrize("fit_intercept", [False, True])
-def test_indrewlasso(data, fit_intercept):
+@pytest.mark.parametrize("fit_intercept, normalize",
+                         product([False, True], [False, True]))
+def test_indrewlasso(data, fit_intercept, normalize):
 
     X, y = data
     n_samples = y.shape[1]
@@ -37,8 +41,8 @@ def test_indrewlasso(data, fit_intercept):
     alpha_max = abs(Xty).max() / n_samples
     alpha = alpha_max * np.ones(len(X)) * 0.1
 
-    est = IndRewLasso(alpha=alpha,
-                      fit_intercept=fit_intercept)
+    est = IndRewLasso(alpha=alpha, fit_intercept=fit_intercept,
+                      normalize=normalize)
     est.fit(X, y)
     assert hasattr(est, 'is_fitted_')
 
@@ -48,13 +52,14 @@ def test_indrewlasso(data, fit_intercept):
     scores = est.score(X, y)
     assert_allclose(r2, scores)
 
-    coefs = est.all_coefs
+    # Make sure the loss function decreases
     objs = []
-    for coef in coefs:
-        est.coef_ = coef
+    for rw_step in [1, 2, 4, 6, 10]:
+        est = IndRewLasso(alpha=alpha, fit_intercept=fit_intercept,
+                          normalize=normalize, max_reweighting_iter=rw_step)
+        est.coef_ = est.fit(X, y).coef_
         obj = 0.5 * ((y - est.predict(X)) ** 2).sum() / n_samples
-        obj += (alpha[None, :] * abs(coef) ** 0.5).sum()
+        obj += (alpha[None, :] * abs(est.coef_) ** 0.5).sum()
         objs.append(obj)
-
     # assert objective decreases at every step
     assert np.diff(objs).max() < 1e-5

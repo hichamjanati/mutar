@@ -20,6 +20,10 @@ class MultitaskRegression(BaseEstimator, RegressorMixin):
         whether to calculate the intercept for this model. If set
         to false, no intercept will be used in calculations
         (e.g. data is expected to be already centered).
+    normalize : boolean
+        This parameter is ignored when fit_intercept is set to False. If True,
+        the regressors X will be normalized before regression by subtracting
+        the mean and dividing by the l2-norm.
     max_iter : int, optional
         The maximum number of iterations
     tol : float, optional
@@ -42,14 +46,17 @@ class MultitaskRegression(BaseEstimator, RegressorMixin):
         the specified tolerance.
 
     """
-    def __init__(self, fit_intercept=True,
+    def __init__(self, fit_intercept=True, normalize=False,
                  max_iter=2000, tol=1e-4, warm_start=False):
         self.fit_intercept = fit_intercept
+        self.normalize = normalize
         self.max_iter = max_iter
         self.tol = tol
         self.warm_start = warm_start
+        self.is_fitted_ = False
 
-    def _get_offset(self, X, y):
+    def _pre_fit(self, X, y):
+        """ Normalize and scale the data."""
         n_tasks = len(X)
         n_samples, n_features = X[0].shape
         X, y = check_X_y(X, y, accept_sparse=False, allow_nd=True,
@@ -59,7 +66,7 @@ class MultitaskRegression(BaseEstimator, RegressorMixin):
             raise ValueError("Data shape not understood. X must be "
                              "(n_tasks, n_samples, n_features) and y must be "
                              "(n_tasks, n_samples)")
-
+        X_scale = np.ones((n_tasks, n_features))
         if self.fit_intercept:
             X = X.copy()
             y = y.copy()
@@ -67,19 +74,35 @@ class MultitaskRegression(BaseEstimator, RegressorMixin):
             y_offset = y.mean(axis=1)
             X -= X_offset[:, None, :]
             y -= y_offset[:, None]
+            if self.normalize:
+                X_scale = np.linalg.norm(X, axis=1)
+                X /= X_scale[:, None, :]
         else:
             X_offset = np.zeros((n_tasks, 1, n_features))
             y_offset = np.zeros((n_tasks, 1))
-        return X, y, X_offset, y_offset
+        return X, y, X_offset, y_offset, X_scale
 
-    def _set_intercept(self, X_offset, y_offset):
-        """Set intercept after fit."""
+    def _fit(self, X, y):
+        """Generic fit method to be specified for each model."""
+        pass
+
+    def _post_fit(self, X_offset, y_offset, X_scale):
+        """Set intercept and scale after fit."""
         assert self.is_fitted_
         if self.fit_intercept:
+            if self.normalize:
+                self.coef_ /= X_scale.T
             self.intercept_ = y_offset
             self.intercept_ -= np.einsum("kj,jk->k", X_offset, self.coef_)
         else:
             self.intercept_ = np.zeros_like(y_offset).flatten()
+
+    def fit(self, X, y):
+        X, y, X_offset, y_offset, X_scale = self._pre_fit(X, y)
+        self._fit(X, y)
+        self.is_fitted_ = True
+        self._post_fit(X_offset, y_offset, X_scale)
+        return self
 
     def predict(self, X):
         """ Predict target given unseen data samples.
@@ -166,6 +189,10 @@ class DirtyModel(MultitaskRegression):
         whether to calculate the intercept for this model. If set
         to false, no intercept will be used in calculations
         (e.g. data is expected to be already centered).
+    normalize : boolean
+        This parameter is ignored when fit_intercept is set to False. If True,
+        the regressors X will be normalized before regression by subtracting
+        the mean and dividing by the l2-norm.
     max_iter : int, optional
         The maximum number of iterations
     tol : float, optional
@@ -205,15 +232,15 @@ class DirtyModel(MultitaskRegression):
      [ 0.         -1.20766296]]
 
     """
-    def __init__(self, alpha=1., beta=1., fit_intercept=True,
+    def __init__(self, alpha=1., beta=1., fit_intercept=True, normalize=False,
                  max_iter=2000, tol=1e-4, warm_start=False):
 
-        super().__init__(fit_intercept=fit_intercept, max_iter=max_iter,
-                         tol=tol, warm_start=warm_start)
+        super().__init__(fit_intercept=fit_intercept, normalize=normalize,
+                         max_iter=max_iter, tol=tol, warm_start=warm_start)
         self.alpha = alpha
         self.beta = beta
 
-    def fit(self, X, y):
+    def _fit(self, X, y):
         n_tasks = len(X)
         n_samples, n_features = X[0].shape
 
@@ -221,7 +248,6 @@ class DirtyModel(MultitaskRegression):
             warnings.warn("With alpha=beta=0, this algorithm does not converge"
                           " well. You are advised to use LinearRegression "
                           "estimator", stacklevel=2)
-        X, y, X_offset, y_offset = self._get_offset(X, y)
 
         if not self.warm_start or not hasattr(self, "coef_"):
             coef_shared_ = np.zeros((n_features, n_tasks), dtype=X.dtype,
@@ -237,10 +263,6 @@ class DirtyModel(MultitaskRegression):
         self.coef_specific_ = coef_specific_
         self.residuals_ = R
         self.n_iter_ = n_iter
-        self.is_fitted_ = True
-
-        self._set_intercept(X_offset, y_offset)
-        return self
 
 
 class GroupLasso(DirtyModel):
@@ -264,6 +286,10 @@ class GroupLasso(DirtyModel):
         whether to calculate the intercept for this model. If set
         to false, no intercept will be used in calculations
         (e.g. data is expected to be already centered).
+    normalize : boolean
+        This parameter is ignored when fit_intercept is set to False. If True,
+        the regressors X will be normalized before regression by subtracting
+        the mean and dividing by the l2-norm.
     max_iter : int, optional
         The maximum number of iterations
     tol : float, optional
@@ -300,13 +326,14 @@ class GroupLasso(DirtyModel):
     [[0. 0.]
      [0. 0.]]
     """
-    def __init__(self, alpha=0.1, fit_intercept=True,
+    def __init__(self, alpha=0.1, fit_intercept=True, normalize=False,
                  max_iter=2000, tol=1e-4, warm_start=False):
 
         # if beta > alpha, Dirty models are equivalent to a Group Lasso
         beta = 10 * alpha
         super().__init__(alpha=alpha, beta=beta, fit_intercept=fit_intercept,
-                         max_iter=max_iter, tol=tol, warm_start=warm_start)
+                         normalize=normalize, max_iter=max_iter, tol=tol,
+                         warm_start=warm_start)
 
 
 class IndRewLasso(MultitaskRegression):
@@ -329,6 +356,10 @@ class IndRewLasso(MultitaskRegression):
         whether to calculate the intercept for this model. If set
         to false, no intercept will be used in calculations
         (e.g. data is expected to be already centered).
+    normalize : boolean
+        This parameter is ignored when fit_intercept is set to False. If True,
+        the regressors X will be normalized before regression by subtracting
+        the mean and dividing by the l2-norm.
     max_iter : int, optional
         The maximum number of inner loop iterations
     max_reweighting_iter : int, optional
@@ -368,30 +399,27 @@ class IndRewLasso(MultitaskRegression):
      [ 0.         -1.33862186]]
 
     """
-    def __init__(self, alpha=1., fit_intercept=True, max_iter=2000,
-                 max_reweighting_iter=100, tol=1e-4, warm_start=False):
+    def __init__(self, alpha=1., fit_intercept=True, normalize=False,
+                 max_iter=2000, max_reweighting_iter=100, tol=1e-4,
+                 warm_start=False):
 
-        super().__init__(fit_intercept=fit_intercept, max_iter=max_iter,
-                         tol=tol, warm_start=warm_start)
+        super().__init__(fit_intercept=fit_intercept, normalize=normalize,
+                         max_iter=max_iter, tol=tol, warm_start=warm_start)
         self.alpha = alpha
         self.max_reweighting_iter = max_reweighting_iter
 
-    def fit(self, X, y):
+    def _fit(self, X, y):
         n_tasks = len(X)
         n_samples, n_features = X[0].shape
-
-        X, y, X_offset, y_offset = self._get_offset(X, y)
 
         if not self.warm_start or not hasattr(self, "coef_"):
             self.coef_ = np.zeros((n_features, n_tasks))
         weights = np.ones_like(self.coef_)
         coef_old = self.coef_.copy()
-        self.all_coefs = []
         for i in range(self.max_reweighting_iter):
             Xw = X * weights.T[:, None, :]
             coef_ = solver_lasso(Xw, y, self.alpha, self.max_iter, self.tol)
             coef_ = coef_ * weights
-            self.all_coefs.append(coef_)
             err = abs(coef_ - coef_old).max()
             err /= max(abs(coef_).max(), abs(coef_old).max(), 1.)
             coef_old = coef_.copy()
@@ -400,10 +428,6 @@ class IndRewLasso(MultitaskRegression):
             if err < self.tol and i:
                 break
         self.coef_ = coef_
-        self.is_fitted_ = True
-
-        self._set_intercept(X_offset, y_offset)
-        return self
 
 
 class IndLasso(IndRewLasso):
@@ -426,6 +450,10 @@ class IndLasso(IndRewLasso):
         whether to calculate the intercept for this model. If set
         to false, no intercept will be used in calculations
         (e.g. data is expected to be already centered).
+    normalize : boolean
+        This parameter is ignored when fit_intercept is set to False. If True,
+        the regressors X will be normalized before regression by subtracting
+        the mean and dividing by the l2-norm.
     max_iter : int, optional
         The maximum number of inner loop iterations
     max_reweighting_iter : int, optional
@@ -465,10 +493,10 @@ class IndLasso(IndRewLasso):
      [ 0.         -1.31428571]]
 
     """
-    def __init__(self, alpha=1., fit_intercept=True, max_iter=2000,
-                 tol=1e-4, warm_start=False):
+    def __init__(self, alpha=1., fit_intercept=True, normalize=False,
+                 max_iter=2000, tol=1e-4, warm_start=False):
 
-        super().__init__(fit_intercept=fit_intercept, max_iter=max_iter,
-                         tol=tol, warm_start=warm_start)
+        super().__init__(fit_intercept=fit_intercept, normalize=normalize,
+                         max_iter=max_iter, tol=tol, warm_start=warm_start)
         self.alpha = alpha
         self.max_reweighting_iter = 1
