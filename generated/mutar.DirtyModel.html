@@ -152,17 +152,7 @@ dual gap for optimality and continues until it is smaller
 than <code class="docutils literal notranslate"><span class="pre">tol</span></code>.</p>
 </dd>
 <dt><strong>warm_start</strong><span class="classifier">bool, optional</span></dt><dd><p>When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, reuse the solution of the previous call to fit as
-initialization, otherwise, just erase the previous solution.
-See <span class="xref std std-term">the Glossary</span>.</p>
-</dd>
-<dt><strong>Attributes</strong></dt><dd></dd>
-<dt><strong>———-</strong></dt><dd></dd>
-<dt><strong>coef_</strong><span class="classifier">array, shape (n_features, n_tasks)</span></dt><dd><p>Parameter vector (W in the cost function formula).</p>
-</dd>
-<dt><strong>intercept_</strong><span class="classifier">array, shape (n_tasks,)</span></dt><dd><p>independent term in decision function.</p>
-</dd>
-<dt><strong>n_iter_</strong><span class="classifier">int</span></dt><dd><p>number of iterations run by the coordinate descent solver to reach
-the specified tolerance.</p>
+initialization, otherwise, just erase the previous solution.</p>
 </dd>
 </dl>
 </dd>
@@ -183,6 +173,19 @@ the specified tolerance.</p>
 <span class="go"> [ 0.         -1.20766296]]</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coef_</strong><span class="classifier">array, shape (n_features, n_tasks)</span></dt><dd><p>Parameter vector (W in the cost function formula).</p>
+</dd>
+<dt><strong>intercept_</strong><span class="classifier">array, shape (n_tasks,)</span></dt><dd><p>independent term in decision function.</p>
+</dd>
+<dt><strong>n_iter_</strong><span class="classifier">int</span></dt><dd><p>number of iterations run by the coordinate descent solver to reach
+the specified tolerance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <dl class="method">
 <dt id="mutar.DirtyModel.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">alpha=1.0</em>, <em class="sig-param">beta=1.0</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#DirtyModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.DirtyModel.__init__" title="Permalink to this definition">¶</a></dt>
@@ -206,7 +209,7 @@ the specified tolerance.</p>
 <td><p>Get parameters for this estimator.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#mutar.DirtyModel.predict" title="mutar.DirtyModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(self, X)</p></td>
-<td><p>A reference implementation of a predicting function.</p></td>
+<td><p>Predict target given unseen data samples.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mutar.DirtyModel.score" title="mutar.DirtyModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(self, X, y[, sample_weight])</p></td>
 <td><p>Returns the coefficient of determination R^2 of the prediction.</p></td>
@@ -240,7 +243,7 @@ contained subobjects that are estimators.</p>
 <dl class="method">
 <dt id="mutar.DirtyModel.predict">
 <code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#DirtyModel.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.DirtyModel.predict" title="Permalink to this definition">¶</a></dt>
-<dd><p>A reference implementation of a predicting function.</p>
+<dd><p>Predict target given unseen data samples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -250,7 +253,7 @@ contained subobjects that are estimators.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>y</strong><span class="classifier">ndarray, shape (n_tasks, n_samples)</span></dt><dd><p>Returns an array of ones.</p>
+<dt><strong>y</strong><span class="classifier">ndarray, shape (n_tasks, n_samples)</span></dt><dd><p>Returns the predicted targets.</p>
 </dd>
 </dl>
 </dd>
@@ -259,30 +262,28 @@ contained subobjects that are estimators.</p>
 
 <dl class="method">
 <dt id="mutar.DirtyModel.score">
-<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em>, <em class="sig-param">y</em>, <em class="sig-param">sample_weight=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mutar.DirtyModel.score" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em>, <em class="sig-param">y</em>, <em class="sig-param">sample_weight=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#DirtyModel.score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.DirtyModel.score" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coefficient of determination R^2 of the prediction.</p>
-<p>The coefficient R^2 is defined as (1 - u/v), where u is the residual
-sum of squares ((y_true - y_pred) ** 2).sum() and v is the total
-sum of squares ((y_true - y_true.mean()) ** 2).sum().
-The best possible score is 1.0 and it can be negative (because the
-model can be arbitrarily worse). A constant model that always
-predicts the expected value of y, disregarding the input features,
-would get a R^2 score of 0.0.</p>
+<p>Computes a score for each regression task.
+The coefficient R^2 is defined as (1 - u/v), where u is the residual
+sum of squares ((y_true - y_pred) ** 2).sum() and v is the total sum
+of squares ((y_true - y_true.mean()) ** 2).sum(). The best possible
+score is 1.0 and it can be negative (because the model can be
+arbitrarily worse). A constant model that always predicts the expected
+value of y, disregarding the input features, would get a R^2 score of
+0.0.</p>
+<p>Parameters
+Xarray-like, shape = (n_tasks, n_samples, n_features)
+Test samples.</p>
+<p>yarray-like, shape = (n_tasks, n_samples)
+True values for y.</p>
+<p>sample_weightarray-like, shape = [n_tasks, n_samples], optional
+Sample weights.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>X</strong><span class="classifier">array-like, shape = (n_samples, n_features)</span></dt><dd><p>Test samples.</p>
-</dd>
-<dt><strong>y</strong><span class="classifier">array-like, shape = (n_samples) or (n_samples, n_outputs)</span></dt><dd><p>True values for X.</p>
-</dd>
-<dt><strong>sample_weight</strong><span class="classifier">array-like, shape = [n_samples], optional</span></dt><dd><p>Sample weights.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>score</strong><span class="classifier">float</span></dt><dd><p>R^2 of self.predict(X) wrt. y.</p>
-</dd>
+<dt>array-like, shape = (n_tasks)</dt><dd></dd>
+<dt>R^2 of self.predict(X) wrt. y for each task.</dt><dd></dd>
 </dl>
 </dd>
 </dl>

@@ -106,13 +106,14 @@
       
   <h1>Source code for mutar.estimators</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This is a module to be used as a reference for building other modules</span>
+<span class="sd">Mutar estimators module.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">RegressorMixin</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="k">import</span> <span class="n">check_X_y</span><span class="p">,</span> <span class="n">check_array</span><span class="p">,</span> <span class="n">check_is_fitted</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">r2_score</span>
 
 <span class="kn">from</span> <span class="nn">.solver_dirty</span> <span class="k">import</span> <span class="n">solver_dirty</span>
 
@@ -155,7 +156,7 @@
 <span class="sd">    warm_start : bool, optional</span>
 <span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
 <span class="sd">        initialization, otherwise, just erase the previous solution.</span>
-<span class="sd">        See :term:`the Glossary &lt;warm_start&gt;`.</span>
+
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    coef_ : array, shape (n_features, n_tasks)</span>
@@ -244,7 +245,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="DirtyModel.predict"><a class="viewcode-back" href="../../generated/mutar.DirtyModel.html#mutar.DirtyModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; A reference implementation of a predicting function.</span>
+        <span class="sd">&quot;&quot;&quot; Predict target given unseen data samples.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -254,12 +255,50 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        y : ndarray, shape (n_tasks, n_samples)</span>
-<span class="sd">            Returns an array of ones.</span>
+<span class="sd">            Returns the predicted targets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_nd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;is_fitted_&#39;</span><span class="p">)</span>
         <span class="n">y_pred</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span></div></div>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">intercept_</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">y_pred</span></div>
+
+<div class="viewcode-block" id="DirtyModel.score"><a class="viewcode-back" href="../../generated/mutar.DirtyModel.html#mutar.DirtyModel.score">[docs]</a>    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the coefficient of determination R^2 of the prediction.</span>
+
+<span class="sd">        Computes a score for each regression task.</span>
+<span class="sd">        The coefficient R^2 is defined as (1 - u/v), where u is the residual</span>
+<span class="sd">        sum of squares ((y_true - y_pred) ** 2).sum() and v is the total sum</span>
+<span class="sd">        of squares ((y_true - y_true.mean()) ** 2).sum(). The best possible</span>
+<span class="sd">        score is 1.0 and it can be negative (because the model can be</span>
+<span class="sd">        arbitrarily worse). A constant model that always predicts the expected</span>
+<span class="sd">        value of y, disregarding the input features, would get a R^2 score of</span>
+<span class="sd">        0.0.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        Xarray-like, shape = (n_tasks, n_samples, n_features)</span>
+<span class="sd">        Test samples.</span>
+
+<span class="sd">        yarray-like, shape = (n_tasks, n_samples)</span>
+<span class="sd">        True values for y.</span>
+
+<span class="sd">        sample_weightarray-like, shape = [n_tasks, n_samples], optional</span>
+<span class="sd">        Sample weights.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like, shape = (n_tasks)</span>
+<span class="sd">        R^2 of self.predict(X) wrt. y for each task.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sample_weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span><span class="p">,</span> <span class="n">multioutput</span><span class="o">=</span><span class="s1">&#39;variance_weighted&#39;</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_i</span><span class="p">,</span>
+                      <span class="n">multioutput</span><span class="o">=</span><span class="s1">&#39;variance_weighted&#39;</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span><span class="p">,</span> <span class="n">w_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">sample_weight</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="GroupLasso"><a class="viewcode-back" href="../../generated/mutar.GroupLasso.html#mutar.GroupLasso">[docs]</a><span class="k">class</span> <span class="nc">GroupLasso</span><span class="p">(</span><span class="n">DirtyModel</span><span class="p">):</span>
@@ -293,7 +332,7 @@
 <span class="sd">    warm_start : bool, optional</span>
 <span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
 <span class="sd">        initialization, otherwise, just erase the previous solution.</span>
-<span class="sd">        See :term:`the Glossary &lt;warm_start&gt;`.</span>
+
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    coef_ : array, shape (n_features, n_tasks)</span>
