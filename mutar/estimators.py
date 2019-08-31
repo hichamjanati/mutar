@@ -246,7 +246,7 @@ class DirtyModel(MultitaskRegression):
 class GroupLasso(DirtyModel):
     """ GroupLasso estimator with L1/L2 mixed-norm as regularizer.
 
-    The optimization objective for Dirty models is::
+    The optimization objective for Group Lasso is::
 
         (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha * ||W||_21
 
@@ -312,7 +312,7 @@ class GroupLasso(DirtyModel):
 class IndRewLasso(MultitaskRegression):
     """ Independent Reweighted Lasso estimator with L1 regularizer.
 
-    The optimization objective for Dirty models is::
+    The optimization objective for IndRewLasso is::
 
         (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha * ||W||_0.5
 
@@ -409,7 +409,7 @@ class IndRewLasso(MultitaskRegression):
 class IndLasso(IndRewLasso):
     """ Independent Lasso estimator with L1 regularizer.
 
-    The optimization objective for Dirty models is::
+    The optimization objective for IndLasso is::
 
         (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha * ||W||_1
 
