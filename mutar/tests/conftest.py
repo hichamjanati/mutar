@@ -12,6 +12,6 @@ def data(request):
     coef[4, 0] = - 10.
     coef[5, 1] = - 10.
     y = np.array([x.dot(c) for x, c in zip(X, coef.T)])
-    y += 0.2 * np.std(y) + rng.randn(n_tasks, n_samples)
+    y += 0.5 * np.std(y) + rng.randn(n_tasks, n_samples)
 
     return X, y

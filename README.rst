@@ -22,10 +22,15 @@ models (X_1, y_1) ... (X_k, y_k).
 Estimators
 ----------
 
-Mutar contains implementations of the following models:
+Mutar models include:
 
+1. Mixed-norms multi-task linear models:
 * GroupLasso: l1/l2 regularized regression with identical feature supports across tasks. `(Yuan and Lin, J. R Statistical Society 2006) <http://pages.stat.wisc.edu/~myuan/papers/glasso.final.pdf>`_
 * DirtyModel Generalization of the Group Lasso with a partial overlap of features using a composite l1/l2 and l1 regularization `(Jalali et al., NeurIPS 2010) <https://papers.nips.cc/paper/4125-a-dirty-model-for-multi-task-learning?>`_.
+
+2. Independent linear models :
+* Independent Lasso estimator
+* Independent Re-weighted (Adaptive) Lasso estimator
 
 Installation
 ------------

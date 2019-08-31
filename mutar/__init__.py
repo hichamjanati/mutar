@@ -1,6 +1,6 @@
-from .estimators import DirtyModel, GroupLasso
+from .estimators import DirtyModel, GroupLasso, IndLasso, IndRewLasso
 from ._version import __version__
-from .solver_dirty import solver_dirty
+from .solvers import solver_dirty, solver_lasso
 
 __all__ = ['DirtyModel', 'solver_dirty', 'GroupLasso',
-           '__version__']
+           '__version__', 'IndLasso', 'solver_lasso', 'IndRewLasso']

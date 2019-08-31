@@ -2,6 +2,9 @@
 import numpy as np
 import numba as nb
 from numba import (jit, float64, int64)
+
+from sklearn.linear_model import Lasso
+
 from . import utils
 
 
@@ -95,3 +98,21 @@ def _solver_dirty(X, R, coef_shared_, coef_specific_, Ls, alpha, beta,
               "\n"
               "You may want to increase maxiter.")
     return coef_shared_, coef_specific_, R, i
+
+
+def solver_lasso(X, y, alpha=None, maxiter=3000, tol=1e-4):
+    """Solver for Independent Lasso."""
+
+    n_tasks, n_samples, n_features = X.shape
+    theta = np.zeros((n_features, n_tasks))
+
+    if alpha is None:
+        alpha = np.ones(n_tasks)
+    alpha = np.asarray(alpha).reshape(n_tasks)
+    for k in range(n_tasks):
+        lasso = Lasso(alpha=alpha[k], tol=tol, max_iter=maxiter,
+                      fit_intercept=False)
+        lasso.fit(X[k], y[k])
+        theta[:, k] = lasso.coef_
+
+    return theta
