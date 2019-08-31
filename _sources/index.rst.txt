@@ -20,4 +20,4 @@
 |
 
 .. include:: ../README.rst
- :end-line: 45
+ :end-line: 84
