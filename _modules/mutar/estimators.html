@@ -353,7 +353,7 @@
 <div class="viewcode-block" id="GroupLasso"><a class="viewcode-back" href="../../generated/mutar.GroupLasso.html#mutar.GroupLasso">[docs]</a><span class="k">class</span> <span class="nc">GroupLasso</span><span class="p">(</span><span class="n">DirtyModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; GroupLasso estimator with L1/L2 mixed-norm as regularizer.</span>
 
-<span class="sd">    The optimization objective for Dirty models is::</span>
+<span class="sd">    The optimization objective for Group Lasso is::</span>
 
 <span class="sd">        (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha * ||W||_21</span>
 
@@ -419,7 +419,7 @@
 <div class="viewcode-block" id="IndRewLasso"><a class="viewcode-back" href="../../generated/mutar.IndRewLasso.html#mutar.IndRewLasso">[docs]</a><span class="k">class</span> <span class="nc">IndRewLasso</span><span class="p">(</span><span class="n">MultitaskRegression</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Independent Reweighted Lasso estimator with L1 regularizer.</span>
 
-<span class="sd">    The optimization objective for Dirty models is::</span>
+<span class="sd">    The optimization objective for IndRewLasso is::</span>
 
 <span class="sd">        (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha * ||W||_0.5</span>
 
@@ -516,7 +516,7 @@
 <div class="viewcode-block" id="IndLasso"><a class="viewcode-back" href="../../generated/mutar.IndLasso.html#mutar.IndLasso">[docs]</a><span class="k">class</span> <span class="nc">IndLasso</span><span class="p">(</span><span class="n">IndRewLasso</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Independent Lasso estimator with L1 regularizer.</span>
 
-<span class="sd">    The optimization objective for Dirty models is::</span>
+<span class="sd">    The optimization objective for IndLasso is::</span>
 
 <span class="sd">        (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha * ||W||_1</span>
 

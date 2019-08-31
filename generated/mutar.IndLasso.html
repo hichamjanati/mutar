@@ -119,7 +119,7 @@
 <dt id="mutar.IndLasso">
 <em class="property">class </em><code class="sig-prename descclassname">mutar.</code><code class="sig-name descname">IndLasso</code><span class="sig-paren">(</span><em class="sig-param">alpha=1.0</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#IndLasso"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.IndLasso" title="Permalink to this definition">¶</a></dt>
 <dd><p>Independent Lasso estimator with L1 regularizer.</p>
-<p>The optimization objective for Dirty models is:</p>
+<p>The optimization objective for IndLasso is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">Y</span> <span class="o">-</span> <span class="n">XW</span><span class="o">||^</span><span class="mi">2</span><span class="n">_Fro</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">W</span><span class="o">||</span><span class="n">_1</span>
 </pre></div>
 </div>
