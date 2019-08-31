@@ -17,7 +17,9 @@ MuTaR: Multi-task Regression in Python
 
 MuTaR is a collection of sparse models for multi-task regression. Mutar models
 fit regularized regression models on a sequence of related linear
-models (X_1, y_1) ... (X_k, y_k) and follow `scikit-learn's <http://scikit-learn.org>`_ API.
+models (X_1, y_1) ... (X_k, y_k) and follows `scikit-learn's <http://scikit-learn.org>`_ API.
+Compared with scikit-learn's MultiTaskLasso, MuTaR allows for a different design
+data X for each task.
 
 Estimators
 ----------
