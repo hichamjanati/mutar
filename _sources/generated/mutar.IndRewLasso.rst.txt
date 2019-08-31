@@ -1,0 +1,27 @@
+mutar.IndRewLasso
+=================
+
+.. currentmodule:: mutar
+
+.. autoclass:: IndRewLasso
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~IndRewLasso.__init__
+      ~IndRewLasso.fit
+      ~IndRewLasso.get_params
+      ~IndRewLasso.predict
+      ~IndRewLasso.score
+      ~IndRewLasso.set_params
+   
+   
+
+   
+   
+   

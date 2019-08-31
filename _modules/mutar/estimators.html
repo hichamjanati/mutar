@@ -416,7 +416,7 @@
                          <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">IndRewLasso</span><span class="p">(</span><span class="n">MultitaskRegression</span><span class="p">):</span>
+<div class="viewcode-block" id="IndRewLasso"><a class="viewcode-back" href="../../generated/mutar.IndRewLasso.html#mutar.IndRewLasso">[docs]</a><span class="k">class</span> <span class="nc">IndRewLasso</span><span class="p">(</span><span class="n">MultitaskRegression</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Independent Reweighted Lasso estimator with L1 regularizer.</span>
 
 <span class="sd">    The optimization objective for Dirty models is::</span>
@@ -475,13 +475,13 @@
 <span class="sd">     [ 0.         -1.33862186]]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+<div class="viewcode-block" id="IndRewLasso.__init__"><a class="viewcode-back" href="../../generated/mutar.IndRewLasso.html#mutar.IndRewLasso.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
                  <span class="n">max_reweighting_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
                          <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_reweighting_iter</span> <span class="o">=</span> <span class="n">max_reweighting_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_reweighting_iter</span> <span class="o">=</span> <span class="n">max_reweighting_iter</span></div>
 
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="n">n_tasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -510,10 +510,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_intercept</span><span class="p">(</span><span class="n">X_offset</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 
-<span class="k">class</span> <span class="nc">IndLasso</span><span class="p">(</span><span class="n">IndRewLasso</span><span class="p">):</span>
+<div class="viewcode-block" id="IndLasso"><a class="viewcode-back" href="../../generated/mutar.IndLasso.html#mutar.IndLasso">[docs]</a><span class="k">class</span> <span class="nc">IndLasso</span><span class="p">(</span><span class="n">IndRewLasso</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Independent Lasso estimator with L1 regularizer.</span>
 
 <span class="sd">    The optimization objective for Dirty models is::</span>
@@ -572,13 +572,13 @@
 <span class="sd">     [ 0.         -1.31428571]]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+<div class="viewcode-block" id="IndLasso.__init__"><a class="viewcode-back" href="../../generated/mutar.IndLasso.html#mutar.IndLasso.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
                  <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
                          <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_reweighting_iter</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_reweighting_iter</span> <span class="o">=</span> <span class="mi">1</span></div></div>
 </pre></div>
 
     </div>

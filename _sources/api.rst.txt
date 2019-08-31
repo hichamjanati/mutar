@@ -16,3 +16,5 @@ Estimators
 
    DirtyModel
    GroupLasso
+   IndLasso
+   IndRewLasso
