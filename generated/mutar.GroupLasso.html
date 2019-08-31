@@ -117,7 +117,7 @@
 <h1>mutar.GroupLasso<a class="headerlink" href="#mutar-grouplasso" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="mutar.GroupLasso">
-<em class="property">class </em><code class="sig-prename descclassname">mutar.</code><code class="sig-name descname">GroupLasso</code><span class="sig-paren">(</span><em class="sig-param">alpha=0.1</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#GroupLasso"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.GroupLasso" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mutar.</code><code class="sig-name descname">GroupLasso</code><span class="sig-paren">(</span><em class="sig-param">alpha=0.1</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#GroupLasso"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.GroupLasso" title="Permalink to this definition">¶</a></dt>
 <dd><p>GroupLasso estimator with L1/L2 mixed-norm as regularizer.</p>
 <p>The optimization objective for Group Lasso is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">Y</span> <span class="o">-</span> <span class="n">XW</span><span class="o">||^</span><span class="mi">2</span><span class="n">_Fro</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">W</span><span class="o">||</span><span class="n">_21</span>
@@ -136,6 +136,10 @@
 <dt><strong>fit_intercept</strong><span class="classifier">boolean</span></dt><dd><p>whether to calculate the intercept for this model. If set
 to false, no intercept will be used in calculations
 (e.g. data is expected to be already centered).</p>
+</dd>
+<dt><strong>normalize</strong><span class="classifier">boolean</span></dt><dd><p>This parameter is ignored when fit_intercept is set to False. If True,
+the regressors X will be normalized before regression by subtracting
+the mean and dividing by the l2-norm.</p>
 </dd>
 <dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum number of iterations</p>
 </dd>
@@ -179,7 +183,7 @@ the specified tolerance.</p>
 </dl>
 <dl class="method">
 <dt id="mutar.GroupLasso.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">alpha=0.1</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#GroupLasso.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.GroupLasso.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">alpha=0.1</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#GroupLasso.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.GroupLasso.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
