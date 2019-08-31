@@ -52,6 +52,26 @@ Introductory examples.
    :hidden:
 
    /auto_examples/plot_dirty
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The adaptive or reweighted Lasso minimizes the non-convex L0.5 pseudo norm which is a better sp...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_reweighted_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_reweighted.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_reweighted
 .. raw:: html
 
     <div style='clear:both'></div>

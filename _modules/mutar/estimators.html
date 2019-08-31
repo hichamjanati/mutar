@@ -115,10 +115,137 @@
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="k">import</span> <span class="n">check_X_y</span><span class="p">,</span> <span class="n">check_array</span><span class="p">,</span> <span class="n">check_is_fitted</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">r2_score</span>
 
-<span class="kn">from</span> <span class="nn">.solver_dirty</span> <span class="k">import</span> <span class="n">solver_dirty</span>
+<span class="kn">from</span> <span class="nn">.solvers</span> <span class="k">import</span> <span class="n">solver_dirty</span><span class="p">,</span> <span class="n">solver_lasso</span>
 
 
-<div class="viewcode-block" id="DirtyModel"><a class="viewcode-back" href="../../generated/mutar.DirtyModel.html#mutar.DirtyModel">[docs]</a><span class="k">class</span> <span class="nc">DirtyModel</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">RegressorMixin</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MultitaskRegression</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">RegressorMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Multitask regression abstract class.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fit_intercept : boolean</span>
+<span class="sd">        whether to calculate the intercept for this model. If set</span>
+<span class="sd">        to false, no intercept will be used in calculations</span>
+<span class="sd">        (e.g. data is expected to be already centered).</span>
+<span class="sd">    max_iter : int, optional</span>
+<span class="sd">        The maximum number of iterations</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        The tolerance for the optimization: if the updates are</span>
+<span class="sd">        smaller than ``tol``, the optimization code checks the</span>
+<span class="sd">        dual gap for optimality and continues until it is smaller</span>
+<span class="sd">        than ``tol``.</span>
+<span class="sd">    warm_start : bool, optional</span>
+<span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
+<span class="sd">        initialization, otherwise, just erase the previous solution.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    coef_ : array, shape (n_features, n_tasks)</span>
+<span class="sd">        Parameter vector (W in the cost function formula).</span>
+<span class="sd">    intercept_ : array, shape (n_tasks,)</span>
+<span class="sd">        independent term in decision function.</span>
+<span class="sd">    n_iter_ : int</span>
+<span class="sd">        number of iterations run by the coordinate descent solver to reach</span>
+<span class="sd">        the specified tolerance.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit_intercept</span> <span class="o">=</span> <span class="n">fit_intercept</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warm_start</span> <span class="o">=</span> <span class="n">warm_start</span>
+
+    <span class="k">def</span> <span class="nf">_get_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">n_tasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_nd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">multi_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n_tasks</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Data shape not understood. X must be &quot;</span>
+                             <span class="s2">&quot;(n_tasks, n_samples, n_features) and y must be &quot;</span>
+                             <span class="s2">&quot;(n_tasks, n_samples)&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_intercept</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">X_offset</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">y_offset</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">X</span> <span class="o">-=</span> <span class="n">X_offset</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">y</span> <span class="o">-=</span> <span class="n">y_offset</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">X_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_tasks</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_features</span><span class="p">))</span>
+            <span class="n">y_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_tasks</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_offset</span><span class="p">,</span> <span class="n">y_offset</span>
+
+    <span class="k">def</span> <span class="nf">_set_intercept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_offset</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set intercept after fit.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_intercept</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intercept_</span> <span class="o">=</span> <span class="n">y_offset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intercept_</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;kj,jk-&gt;k&quot;</span><span class="p">,</span> <span class="n">X_offset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intercept_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y_offset</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Predict target given unseen data samples.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : {array-like}, shape (n_tasks, n_samples, n_features)</span>
+<span class="sd">            The training input samples.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        y : ndarray, shape (n_tasks, n_samples)</span>
+<span class="sd">            Returns the predicted targets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_nd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;is_fitted_&#39;</span><span class="p">)</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">intercept_</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">y_pred</span>
+
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the coefficient of determination R^2 of the prediction.</span>
+
+<span class="sd">        Computes a score for each regression task.</span>
+<span class="sd">        The coefficient R^2 is defined as (1 - u/v), where u is the residual</span>
+<span class="sd">        sum of squares ((y_true - y_pred) ** 2).sum() and v is the total sum</span>
+<span class="sd">        of squares ((y_true - y_true.mean()) ** 2).sum(). The best possible</span>
+<span class="sd">        score is 1.0 and it can be negative (because the model can be</span>
+<span class="sd">        arbitrarily worse). A constant model that always predicts the expected</span>
+<span class="sd">        value of y, disregarding the input features, would get a R^2 score of</span>
+<span class="sd">        0.0.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        Xarray-like, shape = (n_tasks, n_samples, n_features)</span>
+<span class="sd">        Test samples.</span>
+
+<span class="sd">        yarray-like, shape = (n_tasks, n_samples)</span>
+<span class="sd">        True values for y.</span>
+
+<span class="sd">        sample_weightarray-like, shape = [n_tasks, n_samples], optional</span>
+<span class="sd">        Sample weights.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like, shape = (n_tasks)</span>
+<span class="sd">        R^2 of self.predict(X) wrt. y for each task.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sample_weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span><span class="p">,</span> <span class="n">multioutput</span><span class="o">=</span><span class="s1">&#39;variance_weighted&#39;</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_i</span><span class="p">,</span>
+                      <span class="n">multioutput</span><span class="o">=</span><span class="s1">&#39;variance_weighted&#39;</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span><span class="p">,</span> <span class="n">w_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">sample_weight</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DirtyModel"><a class="viewcode-back" href="../../generated/mutar.DirtyModel.html#mutar.DirtyModel">[docs]</a><span class="k">class</span> <span class="nc">DirtyModel</span><span class="p">(</span><span class="n">MultitaskRegression</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; DirtyModel estimator with L1 and L1/L2 mixed-norm as regularizers.</span>
 
 <span class="sd">    The optimization objective for Dirty models is::</span>
@@ -128,13 +255,13 @@
 
 <span class="sd">    Where::</span>
 
-<span class="sd">        ||W||_21 = \\sum_i \\sqrt{\\sum_j w_ij^2}</span>
+<span class="sd">        ||W||_21 = sum_i sqrt{sum_j w_ij^2}</span>
 
 <span class="sd">    i.e. the sum of norm of each row.</span>
 
 <span class="sd">    and::</span>
 
-<span class="sd">        ||W||_1 = \\sum_i \\sum_j |w_ij|</span>
+<span class="sd">        ||W||_1 = sum_i sum_j |w_ij|</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -187,39 +314,21 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="DirtyModel.__init__"><a class="viewcode-back" href="../../generated/mutar.DirtyModel.html#mutar.DirtyModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+                         <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fit_intercept</span> <span class="o">=</span> <span class="n">fit_intercept</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">warm_start</span> <span class="o">=</span> <span class="n">warm_start</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span></div>
 
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="n">n_tasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">==</span> <span class="mf">0.</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;With alpha=beta=0, this algorithm does not converge&quot;</span>
                           <span class="s2">&quot; well. You are advised to use LinearRegression &quot;</span>
                           <span class="s2">&quot;estimator&quot;</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_nd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                         <span class="n">multi_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n_tasks</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Data shape not understood. X must be &quot;</span>
-                             <span class="s2">&quot;(n_tasks, n_samples, n_features) and y must be &quot;</span>
-                             <span class="s2">&quot;(n_tasks, n_samples)&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_intercept</span><span class="p">:</span>
-            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">X_offset</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">y_offset</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">X</span> <span class="o">-=</span> <span class="n">X_offset</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="n">y</span> <span class="o">-=</span> <span class="n">y_offset</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">X_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_tasks</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_features</span><span class="p">))</span>
-            <span class="n">y_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_tasks</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_offset</span><span class="p">,</span> <span class="n">y_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_offset</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">warm_start</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;coef_&quot;</span><span class="p">):</span>
             <span class="n">coef_shared_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
@@ -235,70 +344,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">coef_specific_</span> <span class="o">=</span> <span class="n">coef_specific_</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">residuals_</span> <span class="o">=</span> <span class="n">R</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="n">n_iter</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_intercept</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">intercept_</span> <span class="o">=</span> <span class="n">y_offset</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">intercept_</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;kj,jk-&gt;k&quot;</span><span class="p">,</span> <span class="n">X_offset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">intercept_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_tasks</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="bp">self</span>
 
-<div class="viewcode-block" id="DirtyModel.predict"><a class="viewcode-back" href="../../generated/mutar.DirtyModel.html#mutar.DirtyModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Predict target given unseen data samples.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : {array-like}, shape (n_tasks, n_samples, n_features)</span>
-<span class="sd">            The training input samples.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        y : ndarray, shape (n_tasks, n_samples)</span>
-<span class="sd">            Returns the predicted targets.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_nd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;is_fitted_&#39;</span><span class="p">)</span>
-        <span class="n">y_pred</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span>
-        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">intercept_</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">y_pred</span></div>
-
-<div class="viewcode-block" id="DirtyModel.score"><a class="viewcode-back" href="../../generated/mutar.DirtyModel.html#mutar.DirtyModel.score">[docs]</a>    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the coefficient of determination R^2 of the prediction.</span>
-
-<span class="sd">        Computes a score for each regression task.</span>
-<span class="sd">        The coefficient R^2 is defined as (1 - u/v), where u is the residual</span>
-<span class="sd">        sum of squares ((y_true - y_pred) ** 2).sum() and v is the total sum</span>
-<span class="sd">        of squares ((y_true - y_true.mean()) ** 2).sum(). The best possible</span>
-<span class="sd">        score is 1.0 and it can be negative (because the model can be</span>
-<span class="sd">        arbitrarily worse). A constant model that always predicts the expected</span>
-<span class="sd">        value of y, disregarding the input features, would get a R^2 score of</span>
-<span class="sd">        0.0.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        Xarray-like, shape = (n_tasks, n_samples, n_features)</span>
-<span class="sd">        Test samples.</span>
-
-<span class="sd">        yarray-like, shape = (n_tasks, n_samples)</span>
-<span class="sd">        True values for y.</span>
-
-<span class="sd">        sample_weightarray-like, shape = [n_tasks, n_samples], optional</span>
-<span class="sd">        Sample weights.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        array-like, shape = (n_tasks)</span>
-<span class="sd">        R^2 of self.predict(X) wrt. y for each task.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">sample_weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span><span class="p">,</span> <span class="n">multioutput</span><span class="o">=</span><span class="s1">&#39;variance_weighted&#39;</span><span class="p">)</span>
-                      <span class="k">for</span> <span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_i</span><span class="p">,</span>
-                      <span class="n">multioutput</span><span class="o">=</span><span class="s1">&#39;variance_weighted&#39;</span><span class="p">)</span>
-                      <span class="k">for</span> <span class="n">y_i</span><span class="p">,</span> <span class="n">y_pred_i</span><span class="p">,</span> <span class="n">w_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">sample_weight</span><span class="p">)]</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_intercept</span><span class="p">(</span><span class="n">X_offset</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 
 <div class="viewcode-block" id="GroupLasso"><a class="viewcode-back" href="../../generated/mutar.GroupLasso.html#mutar.GroupLasso">[docs]</a><span class="k">class</span> <span class="nc">GroupLasso</span><span class="p">(</span><span class="n">DirtyModel</span><span class="p">):</span>
@@ -310,7 +359,7 @@
 
 <span class="sd">    Where::</span>
 
-<span class="sd">        ||W||_21 = \\sum_i \\sqrt{\\sum_j w_ij^2}</span>
+<span class="sd">        ||W||_21 = sum_i sqrt{sum_j w_ij^2}</span>
 
 <span class="sd">    i.e. the sum of norm of each row.</span>
 
@@ -365,6 +414,175 @@
         <span class="n">beta</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">alpha</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span>
                          <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">IndRewLasso</span><span class="p">(</span><span class="n">MultitaskRegression</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Independent Reweighted Lasso estimator with L1 regularizer.</span>
+
+<span class="sd">    The optimization objective for Dirty models is::</span>
+
+<span class="sd">        (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha * ||W||_0.5</span>
+
+<span class="sd">    Where::</span>
+
+<span class="sd">        ||W||_0.5 = sum_i sum_j sqrt|w_ij|</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha : (float or array-like), shape (n_tasks)</span>
+<span class="sd">        Optional, default ones(n_tasks)</span>
+<span class="sd">        Constant that multiplies the L0.5 term. Defaults to 1.0</span>
+<span class="sd">    fit_intercept : boolean</span>
+<span class="sd">        whether to calculate the intercept for this model. If set</span>
+<span class="sd">        to false, no intercept will be used in calculations</span>
+<span class="sd">        (e.g. data is expected to be already centered).</span>
+<span class="sd">    max_iter : int, optional</span>
+<span class="sd">        The maximum number of inner loop iterations</span>
+<span class="sd">    max_reweighting_iter : int, optional</span>
+<span class="sd">        Maximum number of reweighting steps i.e outer loop iterations</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        The tolerance for the optimization: if the updates are</span>
+<span class="sd">        smaller than ``tol``, the optimization code checks the</span>
+<span class="sd">        dual gap for optimality and continues until it is smaller</span>
+<span class="sd">        than ``tol``.</span>
+<span class="sd">    warm_start : bool, optional</span>
+<span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
+<span class="sd">        initialization, otherwise, just erase the previous solution.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    coef_ : array, shape (n_features, n_tasks)</span>
+<span class="sd">        Parameter vector (W in the cost function formula).</span>
+<span class="sd">    intercept_ : array, shape (n_tasks,)</span>
+<span class="sd">        independent term in decision function.</span>
+<span class="sd">    n_iter_ : int</span>
+<span class="sd">        number of iterations run by the coordinate descent solver to reach</span>
+<span class="sd">        the specified tolerance.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from mutar import DirtyModel</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array([[[3, 1], [2, 0], [1, 0]],\</span>
+<span class="sd">                     [[0, 2], [-1, 3], [1, -2]]], dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; coef = np.array([[1., 1.], [0., -1]])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([x.dot(c) for x, c in zip(X, coef.T)])</span>
+<span class="sd">    &gt;&gt;&gt; y += 0.1</span>
+<span class="sd">    &gt;&gt;&gt; dirty = DirtyModel(alpha=0.15, beta=0.12).fit(X, y)</span>
+<span class="sd">    &gt;&gt;&gt; print(dirty.coef_shared_)</span>
+<span class="sd">    [[ 0.4652447  0.3465437]</span>
+<span class="sd">     [ 0.        -0.       ]]</span>
+<span class="sd">    &gt;&gt;&gt; print(dirty.coef_specific_)</span>
+<span class="sd">    [[ 0.35453532  0.        ]</span>
+<span class="sd">     [ 0.         -1.20766296]]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+                 <span class="n">max_reweighting_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+                         <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_reweighting_iter</span> <span class="o">=</span> <span class="n">max_reweighting_iter</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">n_tasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_offset</span><span class="p">,</span> <span class="n">y_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_offset</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">warm_start</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;coef_&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
+        <span class="n">coef_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_coefs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_reweighting_iter</span><span class="p">):</span>
+            <span class="n">Xw</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">weights</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">coef_</span> <span class="o">=</span> <span class="n">solver_lasso</span><span class="p">(</span><span class="n">Xw</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">)</span>
+            <span class="n">coef_</span> <span class="o">=</span> <span class="n">coef_</span> <span class="o">*</span> <span class="n">weights</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_coefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coef_</span><span class="p">)</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">coef_</span> <span class="o">-</span> <span class="n">coef_old</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">err</span> <span class="o">/=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">coef_</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">coef_old</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mf">1.</span><span class="p">)</span>
+            <span class="n">coef_old</span> <span class="o">=</span> <span class="n">coef_</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">coef_</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+
+            <span class="k">if</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="ow">and</span> <span class="n">i</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">coef_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_intercept</span><span class="p">(</span><span class="n">X_offset</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+<span class="k">class</span> <span class="nc">IndLasso</span><span class="p">(</span><span class="n">IndRewLasso</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Independent Lasso estimator with L1 regularizer.</span>
+
+<span class="sd">    The optimization objective for Dirty models is::</span>
+
+<span class="sd">        (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha * ||W||_1</span>
+
+<span class="sd">    Where::</span>
+
+<span class="sd">        ||W||_0.5 = sum_i sum_j |w_ij|</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha : (float or array-like), shape (n_tasks)</span>
+<span class="sd">        Optional, default ones(n_tasks)</span>
+<span class="sd">        Constant that multiplies the L1 term. Defaults to 1.0</span>
+<span class="sd">    fit_intercept : boolean</span>
+<span class="sd">        whether to calculate the intercept for this model. If set</span>
+<span class="sd">        to false, no intercept will be used in calculations</span>
+<span class="sd">        (e.g. data is expected to be already centered).</span>
+<span class="sd">    max_iter : int, optional</span>
+<span class="sd">        The maximum number of inner loop iterations</span>
+<span class="sd">    max_reweighting_iter : int, optional</span>
+<span class="sd">        Maximum number of reweighting steps i.e outer loop iterations</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        The tolerance for the optimization: if the updates are</span>
+<span class="sd">        smaller than ``tol``, the optimization code checks the</span>
+<span class="sd">        dual gap for optimality and continues until it is smaller</span>
+<span class="sd">        than ``tol``.</span>
+<span class="sd">    warm_start : bool, optional</span>
+<span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
+<span class="sd">        initialization, otherwise, just erase the previous solution.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    coef_ : array, shape (n_features, n_tasks)</span>
+<span class="sd">        Parameter vector (W in the cost function formula).</span>
+<span class="sd">    intercept_ : array, shape (n_tasks,)</span>
+<span class="sd">        independent term in decision function.</span>
+<span class="sd">    n_iter_ : int</span>
+<span class="sd">        number of iterations run by the coordinate descent solver to reach</span>
+<span class="sd">        the specified tolerance.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from mutar import DirtyModel</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array([[[3, 1], [2, 0], [1, 0]],\</span>
+<span class="sd">                     [[0, 2], [-1, 3], [1, -2]]], dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; coef = np.array([[1., 1.], [0., -1]])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([x.dot(c) for x, c in zip(X, coef.T)])</span>
+<span class="sd">    &gt;&gt;&gt; y += 0.1</span>
+<span class="sd">    &gt;&gt;&gt; dirty = DirtyModel(alpha=0.15, beta=0.12).fit(X, y)</span>
+<span class="sd">    &gt;&gt;&gt; print(dirty.coef_shared_)</span>
+<span class="sd">    [[ 0.4652447  0.3465437]</span>
+<span class="sd">     [ 0.        -0.       ]]</span>
+<span class="sd">    &gt;&gt;&gt; print(dirty.coef_specific_)</span>
+<span class="sd">    [[ 0.35453532  0.        ]</span>
+<span class="sd">     [ 0.         -1.20766296]]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+                 <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+                         <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_reweighting_iter</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
 
     </div>

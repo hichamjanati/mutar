@@ -126,15 +126,25 @@
 <p><a class="reference external" href="https://travis-ci.com/hichamjanati/mutar"><img alt="Travis" src="https://travis-ci.com/hichamjanati/mutar.svg?branch=master" /></a> <a class="reference external" href="https://ci.appveyor.com/project/hichamjanati/mutar"><img alt="AppVeyor" src="https://ci.appveyor.com/api/projects/status/coy2qqaqr1rnnt5y/branch/master?svg=true" /></a> <a class="reference external" href="https://codecov.io/gh/hichamjanati/mutar"><img alt="Codecov" src="https://codecov.io/gh/hichamjanati/mutar/branch/master/graph/badge.svg" /></a></p>
 <div class="section" id="mutar-multi-task-regression-in-python">
 <h1>MuTaR: Multi-task Regression in Python<a class="headerlink" href="#mutar-multi-task-regression-in-python" title="Permalink to this headline">¶</a></h1>
-<p>This is a collection of sparse models for multi-task regression. Mutar models
+<p>MuTaR is a collection of sparse models for multi-task regression. Mutar models
 fit regularized regression models on a sequence of related linear
-models (X_1, y_1) … (X_k, y_k).</p>
+models (X_1, y_1) … (X_k, y_k) and follow <a class="reference external" href="http://scikit-learn.org">scikit-learn’s</a> API.</p>
 <div class="section" id="estimators">
 <h2>Estimators<a class="headerlink" href="#estimators" title="Permalink to this headline">¶</a></h2>
-<p>Mutar contains implementations of the following models:</p>
+<p>Mutar models include:</p>
+<ol class="arabic simple">
+<li><p>Mixed-norms multi-task linear models:</p></li>
+</ol>
 <ul class="simple">
 <li><p>GroupLasso: l1/l2 regularized regression with identical feature supports across tasks. <a class="reference external" href="http://pages.stat.wisc.edu/~myuan/papers/glasso.final.pdf">(Yuan and Lin, J. R Statistical Society 2006)</a></p></li>
 <li><p>DirtyModel Generalization of the Group Lasso with a partial overlap of features using a composite l1/l2 and l1 regularization <a class="reference external" href="https://papers.nips.cc/paper/4125-a-dirty-model-for-multi-task-learning?">(Jalali et al., NeurIPS 2010)</a>.</p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>Independent linear models:</p></li>
+</ol>
+<ul class="simple">
+<li><p>Independent Lasso estimator</p></li>
+<li><p>Independent Re-weighted (Adaptive) Lasso estimator</p></li>
 </ul>
 </div>
 <div class="section" id="installation">
@@ -142,11 +152,6 @@ models (X_1, y_1) … (X_k, y_k).</p>
 <p>On a miniconda environment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">hichamjanati</span><span class="o">/</span><span class="n">mutar</span>
 <span class="n">cd</span> <span class="n">mutar</span>
-<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">develop</span>
-</pre></div>
-</div>
-<p>Otherwise, we recommend creating this minimal <a class="reference external" href="https://raw.githubusercontent.com/hichamjanati/mutar/master/environment.yml">conda env</a></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">env</span> <span class="n">create</span> <span class="o">--</span><span class="n">file</span> <span class="n">environment</span><span class="o">.</span><span class="n">yml</span>
 </pre></div>
 </div>
 </div>
