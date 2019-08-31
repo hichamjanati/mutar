@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Joint feature selection with the Group Lasso &#8212; mutar 0.0.1 documentation</title>
+    <title>Joint feature selection with Dirty models &#8212; mutar 0.0.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -14,8 +14,7 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Joint feature selection with Dirty models" href="plot_dirty.html" />
-    <link rel="prev" title="General examples" href="index.html" />
+    <link rel="prev" title="Joint feature selection with the Group Lasso" href="plot_grouplasso.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -77,7 +76,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Joint feature selection with the Group Lasso</a></li>
+<li><a class="reference internal" href="#">Joint feature selection with Dirty models</a></li>
 </ul>
 </ul>
 </li>
@@ -89,7 +88,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/auto_examples/plot_grouplasso.rst.txt"
+  <a href="../_sources/auto_examples/plot_dirty.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -115,19 +114,25 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-grouplasso-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-dirty-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="joint-feature-selection-with-the-group-lasso">
-<span id="sphx-glr-auto-examples-plot-grouplasso-py"></span><h1>Joint feature selection with the Group Lasso<a class="headerlink" href="#joint-feature-selection-with-the-group-lasso" title="Permalink to this headline">¶</a></h1>
-<p>The GroupLasso estimates a set of sparse coefficients for multiple regression
-models that share the same non-zero features. All features (variable) are
-either zero for all tasks or for None of them. The <cite>GroupLasso</cite> takes a 3D
-<cite>X (n_tasks, n_samples, n_features)</cite> and a 2D <cite>y (n_tasks, n_samples)</cite>. If the
-design matrix <cite>X</cite> of the data is the same for all tasks, we recommand using
-scikit-learn’s MultiTaskLasso.</p>
-<p>The Group Lasso solves the optimization problem:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">Y</span> <span class="o">-</span> <span class="n">XW</span><span class="o">||</span><span class="n">_Fro</span><span class="o">^</span><span class="mi">2</span>
-<span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">W</span><span class="o">||</span><span class="n">_21</span>
+<div class="sphx-glr-example-title section" id="joint-feature-selection-with-dirty-models">
+<span id="sphx-glr-auto-examples-plot-dirty-py"></span><h1>Joint feature selection with Dirty models<a class="headerlink" href="#joint-feature-selection-with-dirty-models" title="Permalink to this headline">¶</a></h1>
+<p><cite>DirtyModel</cite> estimates a set of sparse coefficients for multiple regression
+models that share a fraction of non-zero features. It is a generalization of
+The <cite>GroupLasso</cite> estimator. It also takes a 3D <cite>X (n_tasks, n_samples,
+n_features)</cite> and a 2D <cite>y (n_tasks, n_samples)</cite>.</p>
+<p>DirtyModel solves the optimization problem:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">Y</span> <span class="o">-</span> <span class="n">X</span><span class="p">(</span><span class="n">W_1</span> <span class="o">+</span> <span class="n">W_2</span><span class="p">)</span><span class="o">||^</span><span class="mi">2</span><span class="n">_Fro</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">W_1</span><span class="o">||</span><span class="n">_21</span>
+<span class="o">+</span> <span class="n">beta</span> <span class="o">*</span> <span class="o">||</span><span class="n">W_2</span><span class="o">||</span><span class="n">_1</span>
+</pre></div>
+</div>
+<p>Where:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">||</span><span class="n">W</span><span class="o">||</span><span class="n">_21</span> <span class="o">=</span> \<span class="n">sum_i</span> \<span class="n">sqrt</span><span class="p">{</span>\<span class="n">sum_j</span> <span class="n">w_ij</span><span class="o">^</span><span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>i.e. the sum of norm of each row. and:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">||</span><span class="n">W</span><span class="o">||</span><span class="n">_1</span> <span class="o">=</span> \<span class="n">sum_i</span> \<span class="n">sum_j</span> <span class="o">|</span><span class="n">w_ij</span><span class="o">|</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Hicham Janati (hicham.janati@inria.fr)</span>
@@ -137,20 +142,21 @@ scikit-learn’s MultiTaskLasso.</p>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 
-<span class="kn">from</span> <span class="nn">mutar</span> <span class="k">import</span> <a href="../generated/mutar.GroupLasso.html#mutar.GroupLasso" title="View documentation for mutar.GroupLasso"><span class="n">GroupLasso</span></a>
+<span class="kn">from</span> <span class="nn">mutar</span> <span class="k">import</span> <a href="../generated/mutar.DirtyModel.html#mutar.DirtyModel" title="View documentation for mutar.DirtyModel"><span class="n">DirtyModel</span></a>
 </pre></div>
 </div>
 <p>Generate multi-task data</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">n_tasks</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">30</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_tasks</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>
-<span class="n">coef</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span>
 
-<span class="c1"># The features 0, 2, 4, 6 are shared for all 10 tasks</span>
+<span class="c1"># generate random coefficients and make it sparse</span>
+<span class="c1"># select support</span>
+<span class="n">support</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.95</span>
+<span class="n">coef</span> <span class="o">=</span> <span class="n">support</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">)</span>
+
+<span class="c1"># make features 0, 2, 4 and 6 shared</span>
 <span class="n">coef</span><span class="p">[:</span><span class="mi">7</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">)</span>
-
-<span class="c1"># We pick some additional features for tasks 1 and 3</span>
-<span class="n">coef</span><span class="p">[[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="n">y</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">coef</span><span class="o">.</span><span class="n">T</span><span class="p">)])</span>
 
@@ -158,15 +164,16 @@ scikit-learn’s MultiTaskLasso.</p>
 <span class="n">y</span> <span class="o">+=</span> <span class="mf">0.2</span> <span class="o">*</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.std.html#numpy.std" title="View documentation for numpy.std"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_tasks</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Group Lasso fit</p>
+<p>Dirty models fit</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
-<span class="n">gl</span> <span class="o">=</span> <a href="../generated/mutar.GroupLasso.html#mutar.GroupLasso" title="View documentation for mutar.GroupLasso"><span class="n">GroupLasso</span></a><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
-<span class="n">gl</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">dirty</span> <span class="o">=</span> <a href="../generated/mutar.DirtyModel.html#mutar.DirtyModel" title="View documentation for mutar.DirtyModel"><span class="n">DirtyModel</span></a><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+<span class="n">dirty</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Plot the supports of the true and obtained coefficients.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">coef</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="n">coef</span><span class="p">,</span> <span class="n">gl</span><span class="o">.</span><span class="n">coef_</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;GroupLasso&quot;</span><span class="p">]):</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">coef</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="n">coef</span><span class="p">,</span> <span class="n">dirty</span><span class="o">.</span><span class="n">coef_</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;DirtyModel&quot;</span><span class="p">]):</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">coef</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Tasks&quot;</span><span class="p">)</span>
@@ -175,14 +182,14 @@ scikit-learn’s MultiTaskLasso.</p>
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_plot_grouplasso_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_grouplasso_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.641 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-grouplasso-py">
+<img alt="../_images/sphx_glr_plot_dirty_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_dirty_001.png" />
+<p><strong>Estimated memory usage:</strong>  10 MB</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-dirty-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/9aa443a53a4e35bb4bd6cfe106c4bd01/plot_grouplasso.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_grouplasso.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/8a10d2b6884b849326cf7095bd71bb1f/plot_dirty.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_dirty.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/f23644705be930b97f0c62275a6f7525/plot_grouplasso.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_grouplasso.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/2ce2284b8069bfaa82e093aed034f1ae/plot_dirty.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_dirty.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
