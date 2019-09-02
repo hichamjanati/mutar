@@ -20,3 +20,21 @@ Examples using ``mutar.GroupLasso``
 .. only:: not html
 
     * :ref:`sphx_glr_auto_examples_plot_grouplasso.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example compares the Group Lasso, Dirty models and multilevel Lasso.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_mixed_norms_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_mixed_norms.py`
+
+.. raw:: html
+
+    </div>
+
+.. only:: not html
+
+    * :ref:`sphx_glr_auto_examples_plot_mixed_norms.py`

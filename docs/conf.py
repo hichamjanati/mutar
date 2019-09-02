@@ -356,6 +356,14 @@ sphinx_gallery_conf = {
 }
 
 
+imgmath_latex_preamble = '\\usepackage{amsmath}\n' + \
+                         '\\usepackage{mathtools}\n' + \
+                         '\\usepackage{amsfonts}\n' + \
+                         '\\usepackage{amssymb}\n' + \
+                          '\\usepackage{dsfont}\n' + \
+                          '\\def\\Z{\\mathbb{Z}}\n' + \
+                          '\\def\\R{\\mathbb{R}}\n'
+
 # def setup(app):
 #     # a copy button to copy snippet of code from the documentation
 #     app.add_javascript('js/copybutton.js')

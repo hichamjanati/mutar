@@ -507,24 +507,31 @@ class MultiLevelLasso(MultitaskRegression):
 
     The optimization objective for the Multilevel Lasso is::
 
-        (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha ||W||_{1 0.5}
+
+        (1 / (2 * n_samples)) * ||Y - XW||^2_{Fro} + alpha ||W||_{1 1/2}}
 
 
-    Where::
+    Where:
 
-        ||W||_{1 0.5} = sum_j sqrt(||W_j||_1)
+    .. math::
+
+        \\|W\\|_{1 \\frac{1}{2}} = \\sum_j \\sqrt{\\|W_j\\|_1}
 
 
-    Which is equivelent to:
+    Which is equivelent to::
 
         (1 / (2 * n_samples)) * ||Y - X(C[:, None] * S)||^2_Fro
         + beta * ||C||_1 + gamma * ||S||_1
 
-    Where::
+    Where:
 
-        C in R^n_features
-        S in R^(n_features, n_tasks)
-        alpha = 2 * sqrt(beta * gamma)
+    .. math::
+
+        C \\in \\R^{n\\_features}
+
+        S \\in \\R^{n\\_features, n\\_tasks}
+
+        \\alpha = 2  \\sqrt{\\beta * \\gamma}
 
     Parameters
     ----------

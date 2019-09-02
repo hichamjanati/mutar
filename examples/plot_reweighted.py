@@ -11,7 +11,7 @@ practice, it promotes sparser coefficients with less amplitude bias. As with
 
 
         (1 / (2 * n_samples)) * ||Y - XW||_Fro^2
-        + \sum_k alpha_k * ||W_k||_0.5
+        + sum_k alpha_k * ||W_k||_0.5
 
 
 """
