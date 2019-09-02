@@ -16,7 +16,7 @@ MuTaR: Multi-task Regression in Python
 ======================================
 
 MuTaR is a collection of sparse models for multi-task regression. Mutar models
-fit regularized regression models on a sequence of related linear
+fit regularized regression on a sequence of related linear
 models (X_1, y_1) ... (X_k, y_k) and follows `scikit-learn's <http://scikit-learn.org>`_ API.
 Compared with scikit-learn's MultiTaskLasso, MuTaR allows for a different design
 data X for each task.
@@ -26,10 +26,11 @@ Estimators
 
 Mutar models include:
 
-1. Mixed-norms multi-task linear models:
+1. Group-norms multi-task linear models:
 
-* `GroupLasso`: The Group Lasso is an l1/l2 regularized regression with identical feature supports across tasks. `(Yuan and Lin, J. R Statistical Society 2006) <http://pages.stat.wisc.edu/~myuan/papers/glasso.final.pdf>`_
+* `GroupLasso`: The Group Lasso is an l1/l2 regularized regression with identical feature supports across tasks `(Yuan and Lin, J. R Statistical Society 2006) <http://pages.stat.wisc.edu/~myuan/papers/glasso.final.pdf>`_.
 * `DirtyModel`: Dirty models are a generalization of the Group Lasso with a partial overlap of features. They are defined using a composite l1/l2 and l1 regularization `(Jalali et al., NeurIPS 2010) <https://papers.nips.cc/paper/4125-a-dirty-model-for-multi-task-learning?>`_.
+* `MultiLevelLasso` : Multilevel Lasso is a non-convex model that enhances further sparsity and encourages partial overlap with a product decomposition `(Lozano and Swirszcz, ICML 2012) <https://icml.cc/2012/papers/207.pdf>`_.
 
 2. Independent linear models:
 

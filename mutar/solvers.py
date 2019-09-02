@@ -1,15 +1,17 @@
 """Solvers for multitask regression models."""
+import warnings
 import numpy as np
 import numba as nb
 from numba import (jit, float64, int64)
 
 from sklearn.linear_model import Lasso
+from sklearn.exceptions import ConvergenceWarning
 
 from . import utils
 
 
 def solver_dirty(X, y, coef_shared_, coef_specific_, alpha=1., beta=1.,
-                 maxiter=10000, tol=1e-4):
+                 max_iter=10000, tol=1e-4):
     """BCD in numba."""
     R = utils.residual(X, coef_shared_ + coef_specific_, y)
     X = np.asfortranarray(X)
@@ -19,8 +21,14 @@ def solver_dirty(X, y, coef_shared_, coef_specific_, alpha=1., beta=1.,
 
     coef_shared_, coef_specific_, R, n_iter = \
         _solver_dirty(X, R, coef_shared_, coef_specific_, Ls, alpha, beta,
-                      maxiter, tol)
-
+                      max_iter, tol)
+    if n_iter == max_iter - 1:
+        warnings.warn('Objective did not converge.' +
+                      ' You might want' +
+                      ' to increase the number of iterations.' +
+                      ' Fitting data with very small alpha' +
+                      ' may cause precision problems.',
+                      ConvergenceWarning)
     return coef_shared_, coef_specific_, R, n_iter
 
 
@@ -34,8 +42,8 @@ output_type = nb.types.Tuple((float64[::1, :], float64[::1, :],
                  float64),
      nopython=True, cache=True)
 def _solver_dirty(X, R, coef_shared_, coef_specific_, Ls, alpha, beta,
-                  maxiter, tol):
-    """Perform GFB with BCD to solve Multi-task Dirty group lasso."""
+                  max_iter, tol):
+    """ Coordinate solver of DirtyModels in numba."""
     n_tasks = len(X)
     n_samples, n_features = X[0].shape
     theta = coef_shared_ + coef_specific_
@@ -43,7 +51,7 @@ def _solver_dirty(X, R, coef_shared_, coef_specific_, Ls, alpha, beta,
     beta *= n_samples
 
     # dg = 1.
-    for i in range(maxiter):
+    for i in range(max_iter):
         w_max = 0.0
         d_w_max = 0.0
         for j in range(n_features):
@@ -92,15 +100,11 @@ def _solver_dirty(X, R, coef_shared_, coef_specific_, Ls, alpha, beta,
 
         if (w_max == 0.0 or d_w_max / w_max < tol):
             break
-    if i == maxiter - 1:
-        print("**************************************\n"
-              "******** WARNING: Stopped early. *****\n"
-              "\n"
-              "You may want to increase maxiter.")
+
     return coef_shared_, coef_specific_, R, i
 
 
-def solver_lasso(X, y, alpha=None, maxiter=3000, tol=1e-4):
+def solver_lasso(X, y, alpha=None, max_iter=3000, tol=1e-4):
     """Solver for Independent Lasso."""
 
     n_tasks, n_samples, n_features = X.shape
@@ -110,9 +114,44 @@ def solver_lasso(X, y, alpha=None, maxiter=3000, tol=1e-4):
         alpha = np.ones(n_tasks)
     alpha = np.asarray(alpha).reshape(n_tasks)
     for k in range(n_tasks):
-        lasso = Lasso(alpha=alpha[k], tol=tol, max_iter=maxiter,
+        lasso = Lasso(alpha=alpha[k], tol=tol, max_iter=max_iter,
                       fit_intercept=False)
         lasso.fit(X[k], y[k])
         theta[:, k] = lasso.coef_
 
     return theta
+
+
+def solver_mll(X, y, C, S, alpha=0.1, max_iter=1000, tol=1e-4):
+    """Perform Lasso alternating to solve Multi-level lasso"""
+    n_tasks, n_samples, n_features = X.shape
+    lasso = Lasso(alpha=alpha, fit_intercept=False)
+    lasso_p = Lasso(alpha=alpha / n_tasks, fit_intercept=False,
+                    positive=True)
+    old_theta = C[:, None] * S
+
+    for i in range(max_iter):
+        W = X * C[None, None, :]
+        for k in range(n_tasks):
+            lasso.fit(W[k], y[k])
+            S[:, k] = lasso.coef_
+        Z = S.T[:, None, :] * X
+        Z = Z.reshape(n_tasks * n_samples, n_features)
+        lasso_p.fit(Z, y.flatten())
+        C = lasso_p.coef_
+        theta = C[:, None] * S
+        dll = abs(theta - old_theta).max()
+        dll /= max(abs(theta).max(), abs(old_theta).max(), 1.)
+        old_theta = theta.copy()
+
+        if dll < tol:
+            break
+
+    if i == max_iter - 1:
+        warnings.warn('Objective did not converge.' +
+                      ' You might want' +
+                      ' to increase the number of iterations.' +
+                      ' Fitting data with very small alpha' +
+                      ' may cause precision problems.',
+                      ConvergenceWarning)
+    return C, S, i

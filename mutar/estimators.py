@@ -8,7 +8,7 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.metrics import r2_score
 
-from .solvers import solver_dirty, solver_lasso
+from .solvers import solver_dirty, solver_lasso, solver_mll
 
 
 class MultitaskRegression(BaseEstimator, RegressorMixin):
@@ -500,3 +500,107 @@ class IndLasso(IndRewLasso):
                          max_iter=max_iter, tol=tol, warm_start=warm_start)
         self.alpha = alpha
         self.max_reweighting_iter = 1
+
+
+class MultiLevelLasso(MultitaskRegression):
+    """ MultiLevelLasso estimator with a non-convex product decomposition.
+
+    The optimization objective for the Multilevel Lasso is::
+
+        (1 / (2 * n_samples)) * ||Y - XW||^2_Fro + alpha ||W||_{1 0.5}
+
+
+    Where::
+
+        ||W||_{1 0.5} = sum_j sqrt(||W_j||_1)
+
+
+    Which is equivelent to:
+
+        (1 / (2 * n_samples)) * ||Y - X(C[:, None] * S)||^2_Fro
+        + beta * ||C||_1 + gamma * ||S||_1
+
+    Where::
+
+        C in R^n_features
+        S in R^(n_features, n_tasks)
+        alpha = 2 * sqrt(beta * gamma)
+
+    Parameters
+    ----------
+    alpha : float, optional
+        Constant that multiplies the common L{1 0.5} term. Defaults to 1.0
+    fit_intercept : boolean
+        whether to calculate the intercept for this model. If set
+        to false, no intercept will be used in calculations
+        (e.g. data is expected to be already centered).
+    normalize : boolean
+        This parameter is ignored when fit_intercept is set to False. If True,
+        the regressors X will be normalized before regression by subtracting
+        the mean and dividing by the l2-norm.
+    max_iter : int, optional
+        The maximum number of iterations
+    tol : float, optional
+        The tolerance for the optimization: if the updates are
+        smaller than ``tol``, the optimization code checks the
+        dual gap for optimality and continues until it is smaller
+        than ``tol``.
+    warm_start : bool, optional
+        When set to ``True``, reuse the solution of the previous call to fit as
+        initialization, otherwise, just erase the previous solution.
+
+    Attributes
+    ----------
+    coef_ : array, shape (n_features, n_tasks)
+        Parameter vector (W in the cost function formula).
+    intercept_ : array, shape (n_tasks,)
+        independent term in decision function.
+    n_iter_ : int
+        number of iterations run by the coordinate descent solver to reach
+        the specified tolerance.
+
+    Examples
+    --------
+    >>> from mutar import MultiLevelLasso
+    >>> import numpy as np
+    >>> X = np.array([[[3, 1], [2, 0], [1, 0]],\
+                     [[0, 2], [-1, 3], [1, -2]]], dtype=float)
+    >>> coef = np.array([[1., 1.], [0., -1]])
+    >>> y = np.array([x.dot(c) for x, c in zip(X, coef.T)])
+    >>> y += 0.1
+    >>> mll = MultiLevelLasso(alpha=0.1).fit(X, y)
+    >>> print(mll.coef_shared_)
+    [0.91502387 1.04852402]
+    >>> print(mll.coef_specific_)
+    [[ 0.91339402  0.        ]
+     [ 0.         -1.27834952]]
+    >>> print(mll.coef_)
+    [[ 0.83577734  0.        ]
+     [ 0.         -1.34038017]]
+    """
+    def __init__(self, alpha=1., fit_intercept=True, normalize=False,
+                 max_iter=2000, tol=1e-4, warm_start=False):
+
+        super().__init__(fit_intercept=fit_intercept, normalize=normalize,
+                         max_iter=max_iter, tol=tol, warm_start=warm_start)
+        self.alpha = alpha
+
+    def _fit(self, X, y):
+        n_tasks = len(X)
+        n_samples, n_features = X[0].shape
+
+        if self.alpha == 0.:
+            warnings.warn("With alpha=0, this algorithm does not converge"
+                          " well. You are advised to use LinearRegression "
+                          "estimator", stacklevel=2)
+
+        if not self.warm_start or not hasattr(self, "coef_"):
+            coef_shared_ = np.ones(n_features)
+            coef_specific_ = np.zeros((n_features, n_tasks))
+        coef_shared_, coef_specific_, n_iter = \
+            solver_mll(X, y, C=coef_shared_, S=coef_specific_,
+                       alpha=self.alpha, max_iter=self.max_iter, tol=self.tol)
+        self.coef_ = coef_shared_[:, None] * coef_specific_
+        self.coef_shared_ = coef_shared_
+        self.coef_specific_ = coef_specific_
+        self.n_iter_ = n_iter
