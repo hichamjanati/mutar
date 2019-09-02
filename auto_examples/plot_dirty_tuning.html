@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hyperparameters of Dirty models &#8212; mutar 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Comparison of mixed-norm models" href="plot_mixed_norms.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          mutar</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Examples</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="https://github.com/hichamjanati/mutar">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">General examples</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Hyperparameters of Dirty models</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/plot_dirty_tuning.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-dirty-tuning-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="hyperparameters-of-dirty-models">
+<span id="sphx-glr-auto-examples-plot-dirty-tuning-py"></span><h1>Hyperparameters of Dirty models<a class="headerlink" href="#hyperparameters-of-dirty-models" title="Permalink to this headline">¶</a></h1>
+<p>The aim of this example is to show how Dirty models change with the choice
+of their tuning hyperparameters.</p>
+<p><cite>DirtyModel</cite> estimates a set of sparse coefficients for multiple regression
+models that share a fraction of non-zero features. It is a generalization of
+The <cite>GroupLasso</cite> estimator. It also takes a 3D <cite>X (n_tasks, n_samples,
+n_features)</cite> and a 2D <cite>y (n_tasks, n_samples)</cite>.</p>
+<p>DirtyModel solves the optimization problem:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">Y</span> <span class="o">-</span> <span class="n">X</span><span class="p">(</span><span class="n">W_1</span> <span class="o">+</span> <span class="n">W_2</span><span class="p">)</span><span class="o">||^</span><span class="mi">2</span><span class="n">_Fro</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">W_1</span><span class="o">||</span><span class="n">_21</span>
+<span class="o">+</span> <span class="n">beta</span> <span class="o">*</span> <span class="o">||</span><span class="n">W_2</span><span class="o">||</span><span class="n">_1</span>
+</pre></div>
+</div>
+<p>Where:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">||</span><span class="n">W</span><span class="o">||</span><span class="n">_21</span> <span class="o">=</span> \<span class="n">sum_i</span> \<span class="n">sqrt</span><span class="p">{</span>\<span class="n">sum_j</span> <span class="n">w_ij</span><span class="o">^</span><span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>i.e. the sum of norm of each row. and:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">||</span><span class="n">W</span><span class="o">||</span><span class="n">_1</span> <span class="o">=</span> \<span class="n">sum_i</span> \<span class="n">sum_j</span> <span class="o">|</span><span class="n">w_ij</span><span class="o">|</span>
+</pre></div>
+</div>
+<p>Some choices of alpha and beta eventually cancel out W_1 or W_2 entirely.
+The optimality condition of the optimization problem above leads to:</p>
+<div class="math">
+<p><img src="../_images/math/ea43b4e229c21f5ef3070d56068b7a99afe73224.png" alt="if \alpha \leq \|X^\top y\|_{\infty\infty} / n\_samples"/></p>
+</div><p>and:</p>
+<div class="math">
+<p><img src="../_images/math/911dda64f739d883bb068da513fa00faf9202a6b.png" alt="\beta \leq \|X^\top y\|_{2\infty} / n\_samples"/></p>
+</div><p>Then we have the sufficient conditions:</p>
+<div class="math">
+<p><img src="../_images/math/3e953d37ea79a7d2d6a7b4bf4b9e34ec49d8ff51.png" alt="(1) \quad \beta \geq \alpha \Rightarrow W_2 = 0 \newline
+
+(2) \quad \beta \leq \frac{\alpha}{\sqrt{n\_tasks}} \Rightarrow
+W_1 = 0"/></p>
+</div><p>(1) leads to a Group Lasso estimator, (2) leads to an independent Lasso with
+the same beta for all tasks.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Hicham Janati (hicham.janati@inria.fr)</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">mutar</span> <span class="k">import</span> <a href="../generated/mutar.DirtyModel.html#mutar.DirtyModel" title="View documentation for mutar.DirtyModel"><span class="n">DirtyModel</span></a>
+
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="k">import</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.patches.Patch.html#matplotlib.patches.Patch" title="View documentation for matplotlib.patches.Patch"><span class="n">Patch</span></a>
+<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="k">import</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D" title="View documentation for matplotlib.lines.Line2D"><span class="n">Line2D</span></a>
+</pre></div>
+</div>
+<p>Generate multi-task data</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">n_tasks</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_tasks</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>
+
+<span class="c1"># generate random coefficients and make it sparse</span>
+<span class="c1"># select support</span>
+<span class="n">support</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.95</span>
+<span class="n">coef</span> <span class="o">=</span> <span class="n">support</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">)</span>
+
+<span class="c1"># make features 0, 2, 4 and 6 shared</span>
+<span class="n">coef</span><span class="p">[:</span><span class="mi">7</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">)</span>
+
+<span class="n">y</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">coef</span><span class="o">.</span><span class="n">T</span><span class="p">)])</span>
+
+<span class="c1"># add noise</span>
+<span class="n">y</span> <span class="o">+=</span> <span class="mf">0.25</span> <span class="o">*</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.std.html#numpy.std" title="View documentation for numpy.std"><span class="n">np</span><span class="o">.</span><span class="n">std</span></a><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_tasks</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We create a grid of hyperparameters</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xty</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">yy</span><span class="p">)</span> <span class="k">for</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)])</span>
+<span class="n">beta_max</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xty</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="n">n_samples</span>
+<span class="n">alpha_max</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.norm.html#numpy.linalg.norm" title="View documentation for numpy.linalg.norm"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span></a><span class="p">(</span><span class="n">xty</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="n">n_samples</span>
+<span class="n">alphas</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linspace.html#numpy.linspace" title="View documentation for numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha_max</span>
+<span class="n">betas</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linspace.html#numpy.linspace" title="View documentation for numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span> <span class="o">*</span> <span class="n">beta_max</span>
+
+<span class="n">alphas_mesh</span><span class="p">,</span> <span class="n">betas_mesh</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="View documentation for numpy.meshgrid"><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span></a><span class="p">(</span><span class="n">alphas</span><span class="p">,</span> <span class="n">alphas</span><span class="p">)</span>
+<span class="n">alphas_mesh</span> <span class="o">=</span> <span class="n">alphas_mesh</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="n">betas_mesh</span> <span class="o">=</span> <span class="n">betas_mesh</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For each (alpha, beta) we check if W_1 = 0 or W_2 = 0</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">type_of_model</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">alphas_mesh</span><span class="p">,</span> <span class="n">betas_mesh</span><span class="p">):</span>
+    <span class="n">dirty</span> <span class="o">=</span> <a href="../generated/mutar.DirtyModel.html#mutar.DirtyModel" title="View documentation for mutar.DirtyModel"><span class="n">DirtyModel</span></a><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">dirty</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">W1</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dirty</span><span class="o">.</span><span class="n">coef_shared_</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">W2</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dirty</span><span class="o">.</span><span class="n">coef_specific_</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">W1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">W2</span><span class="p">:</span>
+        <span class="n">type_of_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">W2</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">W1</span><span class="p">:</span>
+        <span class="n">type_of_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">W1</span> <span class="ow">and</span> <span class="n">W2</span><span class="p">:</span>
+        <span class="n">type_of_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">type_of_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">type_of_model</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">type_of_model</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot nature of model depending on hyperparameters
+To benefit from the partial overlap offered by Dirty models, we should
+pick alpha, beta in the gold area</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create the legend manually</span>
+<span class="n">patch_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;indianred&quot;</span><span class="p">,</span> <span class="s2">&quot;cornflowerblue&quot;</span><span class="p">,</span> <span class="s2">&quot;gold&quot;</span><span class="p">,</span> <span class="s2">&quot;black&quot;</span><span class="p">]</span>
+<span class="n">patch_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Group Lasso&quot;</span><span class="p">,</span> <span class="s2">&quot;Ind Lasso&quot;</span><span class="p">,</span> <span class="s2">&quot;Dirty (strict)&quot;</span><span class="p">,</span> <span class="s2">&quot;All Zeros&quot;</span><span class="p">]</span>
+<span class="n">line_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;limegreen&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">]</span>
+<span class="n">line_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;$\beta = \alpha$&quot;</span><span class="p">,</span>
+              <span class="sa">r</span><span class="s2">&quot;$\beta = \frac{\alpha}{\sqrt{n\_tasks}}$&quot;</span><span class="p">,</span>
+              <span class="sa">r</span><span class="s2">&quot;$\beta = \beta_</span><span class="si">{max}</span><span class="s2">$&quot;</span><span class="p">,</span>
+              <span class="sa">r</span><span class="s2">&quot;$\alpha = \alpha_</span><span class="si">{max}</span><span class="s2">$&quot;</span><span class="p">]</span>
+<span class="n">patches</span> <span class="o">=</span> <span class="p">[</span><a href="https://matplotlib.org/api/_as_gen/matplotlib.patches.Patch.html#matplotlib.patches.Patch" title="View documentation for matplotlib.patches.Patch"><span class="n">Patch</span></a><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+           <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patch_colors</span><span class="p">,</span> <span class="n">patch_names</span><span class="p">)]</span>
+<span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><a href="https://matplotlib.org/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D" title="View documentation for matplotlib.lines.Line2D"><span class="n">Line2D</span></a><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+         <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">line_colors</span><span class="p">,</span> <span class="n">line_names</span><span class="p">)]</span>
+<span class="n">legend_handles</span> <span class="o">=</span> <span class="n">patches</span> <span class="o">+</span> <span class="n">lines</span>
+
+<span class="c1"># We plot the type of each model</span>
+<span class="n">colors</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">patch_colors</span><span class="p">)[</span><span class="n">type_of_model</span><span class="p">]</span>
+<span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">alphas_mesh</span> <span class="o">/</span> <span class="n">alpha_max</span><span class="p">,</span> <span class="n">betas_mesh</span> <span class="o">/</span> <span class="n">beta_max</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span>
+           <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alphas</span> <span class="o">/</span> <span class="n">alpha_max</span><span class="p">,</span> <span class="n">alphas</span> <span class="o">/</span> <span class="n">beta_max</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alphas</span> <span class="o">/</span> <span class="n">alpha_max</span><span class="p">,</span> <span class="n">alphas</span> <span class="o">/</span> <span class="p">((</span><span class="n">n_tasks</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">beta_max</span><span class="p">),</span>
+        <span class="n">color</span><span class="o">=</span><span class="n">line_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\alpha / \alpha_</span><span class="si">{max}</span><span class="s2">$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\beta / \beta_</span><span class="si">{max}</span><span class="s2">$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">legend_handles</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.18</span><span class="p">],</span>
+          <span class="n">labelspacing</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_dirty_tuning_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_dirty_tuning_001.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.916 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  10 MB</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-dirty-tuning-py">
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/6b34836eede07b5578beea25f9e928fb/plot_dirty_tuning.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_dirty_tuning.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/071db39df4a7f50f484570ee8b6e92ca/plot_dirty_tuning.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_dirty_tuning.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Hicham Janati.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

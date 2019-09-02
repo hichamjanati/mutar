@@ -72,6 +72,46 @@ Introductory examples.
    :hidden:
 
    /auto_examples/plot_reweighted
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example compares the Group Lasso, Dirty models and multilevel Lasso.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_mixed_norms_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_mixed_norms.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_mixed_norms
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The aim of this example is to show how Dirty models change with the choice of their tuning hype...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_dirty_tuning_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_dirty_tuning.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_dirty_tuning
 .. raw:: html
 
     <div style='clear:both'></div>

@@ -128,7 +128,7 @@
 <div class="section" id="mutar-multi-task-regression-in-python">
 <h1>MuTaR: Multi-task Regression in Python<a class="headerlink" href="#mutar-multi-task-regression-in-python" title="Permalink to this headline">¶</a></h1>
 <p>MuTaR is a collection of sparse models for multi-task regression. Mutar models
-fit regularized regression models on a sequence of related linear
+fit regularized regression on a sequence of related linear
 models (X_1, y_1) … (X_k, y_k) and follows <a class="reference external" href="http://scikit-learn.org">scikit-learn’s</a> API.
 Compared with scikit-learn’s MultiTaskLasso, MuTaR allows for a different design
 data X for each task.</p>
@@ -136,11 +136,12 @@ data X for each task.</p>
 <h2>Estimators<a class="headerlink" href="#estimators" title="Permalink to this headline">¶</a></h2>
 <p>Mutar models include:</p>
 <ol class="arabic simple">
-<li><p>Mixed-norms multi-task linear models:</p></li>
+<li><p>Group-norms multi-task linear models:</p></li>
 </ol>
 <ul class="simple">
-<li><p><cite>GroupLasso</cite>: The Group Lasso is an l1/l2 regularized regression with identical feature supports across tasks. <a class="reference external" href="http://pages.stat.wisc.edu/~myuan/papers/glasso.final.pdf">(Yuan and Lin, J. R Statistical Society 2006)</a></p></li>
+<li><p><cite>GroupLasso</cite>: The Group Lasso is an l1/l2 regularized regression with identical feature supports across tasks <a class="reference external" href="http://pages.stat.wisc.edu/~myuan/papers/glasso.final.pdf">(Yuan and Lin, J. R Statistical Society 2006)</a>.</p></li>
 <li><p><cite>DirtyModel</cite>: Dirty models are a generalization of the Group Lasso with a partial overlap of features. They are defined using a composite l1/l2 and l1 regularization <a class="reference external" href="https://papers.nips.cc/paper/4125-a-dirty-model-for-multi-task-learning?">(Jalali et al., NeurIPS 2010)</a>.</p></li>
+<li><p><cite>MultiLevelLasso</cite> : Multilevel Lasso is a non-convex model that enhances further sparsity and encourages partial overlap with a product decomposition <a class="reference external" href="https://icml.cc/2012/papers/207.pdf">(Lozano and Swirszcz, ICML 2012)</a>.</p></li>
 </ul>
 <ol class="arabic simple" start="2">
 <li><p>Independent linear models:</p></li>

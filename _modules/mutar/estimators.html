@@ -115,7 +115,7 @@
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="k">import</span> <span class="n">check_X_y</span><span class="p">,</span> <span class="n">check_array</span><span class="p">,</span> <span class="n">check_is_fitted</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">r2_score</span>
 
-<span class="kn">from</span> <span class="nn">.solvers</span> <span class="k">import</span> <span class="n">solver_dirty</span><span class="p">,</span> <span class="n">solver_lasso</span>
+<span class="kn">from</span> <span class="nn">.solvers</span> <span class="k">import</span> <span class="n">solver_dirty</span><span class="p">,</span> <span class="n">solver_lasso</span><span class="p">,</span> <span class="n">solver_mll</span>
 
 
 <span class="k">class</span> <span class="nc">MultitaskRegression</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">RegressorMixin</span><span class="p">):</span>
@@ -607,6 +607,117 @@
                          <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_reweighting_iter</span> <span class="o">=</span> <span class="mi">1</span></div></div>
+
+
+<div class="viewcode-block" id="MultiLevelLasso"><a class="viewcode-back" href="../../generated/mutar.MultiLevelLasso.html#mutar.MultiLevelLasso">[docs]</a><span class="k">class</span> <span class="nc">MultiLevelLasso</span><span class="p">(</span><span class="n">MultitaskRegression</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; MultiLevelLasso estimator with a non-convex product decomposition.</span>
+
+<span class="sd">    The optimization objective for the Multilevel Lasso is::</span>
+
+
+<span class="sd">        (1 / (2 * n_samples)) * ||Y - XW||^2_{Fro} + alpha ||W||_{1 1/2}}</span>
+
+
+<span class="sd">    Where:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\|W\\|_{1 \\frac{1}{2}} = \\sum_j \\sqrt{\\|W_j\\|_1}</span>
+
+
+<span class="sd">    Which is equivelent to::</span>
+
+<span class="sd">        (1 / (2 * n_samples)) * ||Y - X(C[:, None] * S)||^2_Fro</span>
+<span class="sd">        + beta * ||C||_1 + gamma * ||S||_1</span>
+
+<span class="sd">    Where:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        C \\in \\R^{n\\_features}</span>
+
+<span class="sd">        S \\in \\R^{n\\_features, n\\_tasks}</span>
+
+<span class="sd">        \\alpha = 2  \\sqrt{\\beta * \\gamma}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha : float, optional</span>
+<span class="sd">        Constant that multiplies the common L{1 0.5} term. Defaults to 1.0</span>
+<span class="sd">    fit_intercept : boolean</span>
+<span class="sd">        whether to calculate the intercept for this model. If set</span>
+<span class="sd">        to false, no intercept will be used in calculations</span>
+<span class="sd">        (e.g. data is expected to be already centered).</span>
+<span class="sd">    normalize : boolean</span>
+<span class="sd">        This parameter is ignored when fit_intercept is set to False. If True,</span>
+<span class="sd">        the regressors X will be normalized before regression by subtracting</span>
+<span class="sd">        the mean and dividing by the l2-norm.</span>
+<span class="sd">    max_iter : int, optional</span>
+<span class="sd">        The maximum number of iterations</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        The tolerance for the optimization: if the updates are</span>
+<span class="sd">        smaller than ``tol``, the optimization code checks the</span>
+<span class="sd">        dual gap for optimality and continues until it is smaller</span>
+<span class="sd">        than ``tol``.</span>
+<span class="sd">    warm_start : bool, optional</span>
+<span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
+<span class="sd">        initialization, otherwise, just erase the previous solution.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    coef_ : array, shape (n_features, n_tasks)</span>
+<span class="sd">        Parameter vector (W in the cost function formula).</span>
+<span class="sd">    intercept_ : array, shape (n_tasks,)</span>
+<span class="sd">        independent term in decision function.</span>
+<span class="sd">    n_iter_ : int</span>
+<span class="sd">        number of iterations run by the coordinate descent solver to reach</span>
+<span class="sd">        the specified tolerance.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from mutar import MultiLevelLasso</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array([[[3, 1], [2, 0], [1, 0]],\</span>
+<span class="sd">                     [[0, 2], [-1, 3], [1, -2]]], dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; coef = np.array([[1., 1.], [0., -1]])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([x.dot(c) for x, c in zip(X, coef.T)])</span>
+<span class="sd">    &gt;&gt;&gt; y += 0.1</span>
+<span class="sd">    &gt;&gt;&gt; mll = MultiLevelLasso(alpha=0.1).fit(X, y)</span>
+<span class="sd">    &gt;&gt;&gt; print(mll.coef_shared_)</span>
+<span class="sd">    [0.91502387 1.04852402]</span>
+<span class="sd">    &gt;&gt;&gt; print(mll.coef_specific_)</span>
+<span class="sd">    [[ 0.91339402  0.        ]</span>
+<span class="sd">     [ 0.         -1.27834952]]</span>
+<span class="sd">    &gt;&gt;&gt; print(mll.coef_)</span>
+<span class="sd">    [[ 0.83577734  0.        ]</span>
+<span class="sd">     [ 0.         -1.34038017]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MultiLevelLasso.__init__"><a class="viewcode-back" href="../../generated/mutar.MultiLevelLasso.html#mutar.MultiLevelLasso.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
+                         <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">n_tasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;With alpha=0, this algorithm does not converge&quot;</span>
+                          <span class="s2">&quot; well. You are advised to use LinearRegression &quot;</span>
+                          <span class="s2">&quot;estimator&quot;</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">warm_start</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;coef_&quot;</span><span class="p">):</span>
+            <span class="n">coef_shared_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_features</span><span class="p">)</span>
+            <span class="n">coef_specific_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span>
+        <span class="n">coef_shared_</span><span class="p">,</span> <span class="n">coef_specific_</span><span class="p">,</span> <span class="n">n_iter</span> <span class="o">=</span> \
+            <span class="n">solver_mll</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">coef_shared_</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="n">coef_specific_</span><span class="p">,</span>
+                       <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">coef_shared_</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">coef_specific_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coef_shared_</span> <span class="o">=</span> <span class="n">coef_shared_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coef_specific_</span> <span class="o">=</span> <span class="n">coef_specific_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="n">n_iter</span></div>
 </pre></div>
 
     </div>

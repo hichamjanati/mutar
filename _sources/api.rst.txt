@@ -18,3 +18,4 @@ Estimators
    GroupLasso
    IndLasso
    IndRewLasso
+   MultiLevelLasso

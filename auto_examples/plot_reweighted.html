@@ -14,6 +14,7 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Comparison of mixed-norm models" href="plot_mixed_norms.html" />
     <link rel="prev" title="Joint feature selection with Dirty models" href="plot_dirty.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -124,7 +125,7 @@ practice, it promotes sparser coefficients with less amplitude bias. As with
 <cite>IndLasso</cite>, <cite>IndRewLasso</cite> is independent across tasks.</p>
 <p><cite>IndRewLasso</cite> solves the optimization problem:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">Y</span> <span class="o">-</span> <span class="n">XW</span><span class="o">||</span><span class="n">_Fro</span><span class="o">^</span><span class="mi">2</span>
-<span class="o">+</span> \<span class="n">sum_k</span> <span class="n">alpha_k</span> <span class="o">*</span> <span class="o">||</span><span class="n">W_k</span><span class="o">||</span><span class="n">_0</span><span class="o">.</span><span class="mi">5</span>
+<span class="o">+</span> <span class="n">sum_k</span> <span class="n">alpha_k</span> <span class="o">*</span> <span class="o">||</span><span class="n">W_k</span><span class="o">||</span><span class="n">_0</span><span class="o">.</span><span class="mi">5</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Hicham Janati (hicham.janati@inria.fr)</span>

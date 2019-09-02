@@ -1,0 +1,27 @@
+mutar.MultiLevelLasso
+=====================
+
+.. currentmodule:: mutar
+
+.. autoclass:: MultiLevelLasso
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MultiLevelLasso.__init__
+      ~MultiLevelLasso.fit
+      ~MultiLevelLasso.get_params
+      ~MultiLevelLasso.predict
+      ~MultiLevelLasso.score
+      ~MultiLevelLasso.set_params
+   
+   
+
+   
+   
+   
