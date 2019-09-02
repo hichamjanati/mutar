@@ -1,0 +1,28 @@
+mutar.MTW
+=========
+
+.. currentmodule:: mutar
+
+.. autoclass:: MTW
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MTW.__init__
+      ~MTW.fit
+      ~MTW.get_params
+      ~MTW.predict
+      ~MTW.reset
+      ~MTW.score
+      ~MTW.set_params
+   
+   
+
+   
+   
+   

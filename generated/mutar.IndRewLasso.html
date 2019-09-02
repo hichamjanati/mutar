@@ -117,7 +117,7 @@
 <h1>mutar.IndRewLasso<a class="headerlink" href="#mutar-indrewlasso" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="mutar.IndRewLasso">
-<em class="property">class </em><code class="sig-prename descclassname">mutar.</code><code class="sig-name descname">IndRewLasso</code><span class="sig-paren">(</span><em class="sig-param">alpha=1.0</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">max_reweighting_iter=100</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#IndRewLasso"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.IndRewLasso" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mutar.</code><code class="sig-name descname">IndRewLasso</code><span class="sig-paren">(</span><em class="sig-param">alpha=1.0</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">max_iter_reweighting=100</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#IndRewLasso"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.IndRewLasso" title="Permalink to this definition">¶</a></dt>
 <dd><p>Independent Reweighted Lasso estimator with L1 regularizer.</p>
 <p>The optimization objective for IndRewLasso is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">Y</span> <span class="o">-</span> <span class="n">XW</span><span class="o">||^</span><span class="mi">2</span><span class="n">_Fro</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="o">||</span><span class="n">W</span><span class="o">||</span><span class="n">_0</span><span class="o">.</span><span class="mi">5</span>
@@ -143,7 +143,7 @@ the mean and dividing by the l2-norm.</p>
 </dd>
 <dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum number of inner loop iterations</p>
 </dd>
-<dt><strong>max_reweighting_iter</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of reweighting steps i.e outer loop iterations</p>
+<dt><strong>max_iter_reweighting</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of reweighting steps i.e outer loop iterations</p>
 </dd>
 <dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: if the updates are
 smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code>, the optimization code checks the
@@ -185,7 +185,7 @@ the specified tolerance.</p>
 </dl>
 <dl class="method">
 <dt id="mutar.IndRewLasso.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">alpha=1.0</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">max_reweighting_iter=100</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#IndRewLasso.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.IndRewLasso.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">alpha=1.0</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">max_iter_reweighting=100</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#IndRewLasso.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.IndRewLasso.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 

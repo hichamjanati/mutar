@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>mutar.ReMTW &#8212; mutar 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="General examples" href="../auto_examples/index.html" />
+    <link rel="prev" title="mutar.MTW" href="mutar.MTW.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          mutar</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../auto_examples/index.html">Examples</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="https://github.com/hichamjanati/mutar">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">General examples</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">mutar.ReMTW</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/generated/mutar.ReMTW.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="mutar-remtw">
+<h1>mutar.ReMTW<a class="headerlink" href="#mutar-remtw" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="mutar.ReMTW">
+<em class="property">class </em><code class="sig-prename descclassname">mutar.</code><code class="sig-name descname">ReMTW</code><span class="sig-paren">(</span><em class="sig-param">alpha=0.1</em>, <em class="sig-param">beta=0.1</em>, <em class="sig-param">M=None</em>, <em class="sig-param">epsilon=None</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">concomitant=False</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em>, <em class="sig-param">max_iter_reweighting=1</em>, <em class="sig-param">stable=False</em>, <em class="sig-param">max_iter_ot=20</em>, <em class="sig-param">max_iter_cd=1000</em>, <em class="sig-param">tol_ot=1e-05</em>, <em class="sig-param">tol_cd=1e-05</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">gpu=False</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#ReMTW"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.ReMTW" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for reweighted Multitask Wasserstein regularization.</p>
+<p>The optimization objective for Reweighted-MTW is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="o">||</span><span class="n">Y</span> <span class="o">-</span> <span class="n">X</span><span class="p">(</span><span class="n">W</span><span class="o">+</span> <span class="o">-</span> <span class="n">W</span><span class="o">-</span><span class="p">)</span><span class="o">||^</span><span class="mi">2</span><span class="n">_Fro</span> <span class="o">+</span>
+<span class="n">alpha</span><span class="p">(</span><span class="n">sum_k</span> <span class="n">OT</span><span class="p">(</span><span class="n">W</span><span class="o">+</span><span class="n">_k</span><span class="p">,</span> <span class="n">Wb</span><span class="o">+</span><span class="p">)</span> <span class="o">+</span> <span class="n">sum_k</span> <span class="n">OT</span><span class="p">(</span><span class="n">W</span><span class="o">-</span><span class="n">_k</span><span class="p">,</span> <span class="n">Wb</span><span class="o">-</span><span class="p">))</span> <span class="o">+</span>
+<span class="n">beta</span> <span class="o">*</span> <span class="p">(</span><span class="o">||</span><span class="n">W</span><span class="o">+||</span><span class="n">_</span><span class="p">{</span><span class="mf">0.5</span><span class="p">}</span> <span class="o">+</span> <span class="o">||</span><span class="n">W</span><span class="o">-||</span><span class="n">_</span><span class="p">{</span><span class="mf">0.5</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Where:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OT</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">Unbalanced</span> <span class="n">Wasserstein</span> <span class="n">distance</span> <span class="k">with</span> <span class="n">Kullback</span><span class="o">-</span><span class="n">Leibler</span>
+<span class="n">marginal</span> <span class="n">relaxation</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>and:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">||</span><span class="n">W</span><span class="o">||</span><span class="n">_</span><span class="p">{</span><span class="mf">0.5</span><span class="p">}</span> <span class="o">=</span> <span class="n">sum_i</span> <span class="n">sum_j</span> <span class="n">sqrt</span><span class="o">|</span><span class="n">w_ij</span><span class="o">|</span>
+</pre></div>
+</div>
+<p>if <cite>concomitant</cite> is set to <cite>True</cite>, ReMTW also infers the standard deviation
+of each task. This allows to scale <cite>beta</cite> adaptively for each task
+according to the level of noise.</p>
+<p>The optimization objective for Concomitant Reweighted-MTW is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">))</span> <span class="o">*</span> <span class="nb">sum</span><span class="o">||</span><span class="n">Y_k</span> <span class="o">-</span> <span class="n">X_k</span><span class="p">(</span><span class="n">W</span><span class="o">+</span><span class="n">k</span> <span class="o">-</span> <span class="n">W</span><span class="o">-</span><span class="n">k</span><span class="p">)</span><span class="o">||^</span><span class="mi">2</span> <span class="o">/</span> <span class="n">sigma_k</span> <span class="o">+</span>
+<span class="n">alpha</span><span class="p">(</span><span class="n">sum_k</span> <span class="n">OT</span><span class="p">(</span><span class="n">W</span><span class="o">+</span><span class="n">_k</span><span class="p">,</span> <span class="n">Wb</span><span class="o">+</span><span class="p">)</span> <span class="o">+</span> <span class="n">sum_k</span> <span class="n">OT</span><span class="p">(</span><span class="n">W</span><span class="o">-</span><span class="n">_k</span><span class="p">,</span> <span class="n">Wb</span><span class="o">-</span><span class="p">))</span> <span class="o">+</span>
+<span class="n">beta</span> <span class="o">*</span> <span class="p">(</span><span class="o">||</span><span class="n">W</span><span class="o">+||</span><span class="n">_</span><span class="p">{</span><span class="mf">0.5</span><span class="p">}</span> <span class="o">+</span> <span class="o">||</span><span class="n">W</span><span class="o">-||</span><span class="n">_</span><span class="p">{</span><span class="mf">0.5</span><span class="p">})</span> <span class="o">+</span> <span class="nb">sum</span> <span class="n">sigma_k</span> <span class="o">/</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>alpha</strong><span class="classifier">float, optional</span></dt><dd><p>Constant that multiplies the OT term. Defaults to 0.1</p>
+</dd>
+<dt><strong>beta</strong><span class="classifier">float, optional</span></dt><dd><p>Constant that multiplies the L0.5 term. Defaults to 0.1</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">array, shape (n_features, n_features)</span></dt><dd><p>Ground metric matrix defining the Wasserstein distance.</p>
+</dd>
+<dt><strong>epsilon</strong><span class="classifier">float &gt; 0, optional</span></dt><dd><p>OT parameter. Weight of the entropy regularization.</p>
+</dd>
+<dt><strong>gamma</strong><span class="classifier">float &gt; 0, optional</span></dt><dd><p>OT parameter. Weight of the Kullback-Leibler marginal relaxation.</p>
+</dd>
+<dt><strong>fit_intercept</strong><span class="classifier">boolean</span></dt><dd><p>whether to calculate the intercept for this model. If set
+to false, no intercept will be used in calculations
+(e.g. data is expected to be already centered).</p>
+</dd>
+<dt><strong>normalize</strong><span class="classifier">boolean</span></dt><dd><p>This parameter is ignored when fit_intercept is set to False. If True,
+the regressors X will be normalized before regression by subtracting
+the mean and dividing by the l2-norm.</p>
+</dd>
+<dt><strong>concomitant</strong><span class="classifier">boolean, optional (default False)</span></dt><dd><p>If True, the concomittant version of MTW is used where the l1
+penalty is adaptively scaled to the noise std estimation.</p>
+</dd>
+<dt><strong>stable</strong><span class="classifier">boolean. optional (default False)</span></dt><dd><p>if True, use log-domain Sinhorn stabilization from the first iter.
+if False, the solver will automatically switch to log-domain if
+numerical errors are encountered.</p>
+</dd>
+<dt><strong>max_iter_reweighting</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of reweighting steps i.e outer loop iterations</p>
+</dd>
+<dt><strong>callback</strong><span class="classifier">boolean. optional.</span></dt><dd><p>if True, set a printing callback function to the solver.</p>
+</dd>
+<dt><strong>max_iter_ot</strong><span class="classifier">int, optional (default, 20)</span></dt><dd><p>maximum Sinkhorn iterations</p>
+</dd>
+<dt><strong>max_iter_cd</strong><span class="classifier">int, optional (default, 10000)</span></dt><dd><p>maximum coordinate descent iterations</p>
+</dd>
+<dt><strong>tol_ot</strong><span class="classifier">float, optional (default 1e-4)</span></dt><dd><p>relative maximum change of the Wasserstein barycenter.</p>
+</dd>
+<dt><strong>tol_cd</strong><span class="classifier">float, optional (default 1e-4)</span></dt><dd><p>relative maximum change of the coefficients in coordinate descent.</p>
+</dd>
+<dt><strong>n_jobs: int &gt; 1, default 1</strong></dt><dd><p>number of threads used in coordinate descents</p>
+</dd>
+<dt><strong>gpu: boolean, optional (default False)</strong></dt><dd><p>if True, Sinkhorn iterations are performed on gpus using cupy.</p>
+</dd>
+<dt><strong>positive</strong><span class="classifier">boolean.</span></dt><dd><p>if True, coefficients must be positive.</p>
+</dd>
+<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The maximum number of iterations</p>
+</dd>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>The tolerance for the optimization: if the updates are
+smaller than <code class="docutils literal notranslate"><span class="pre">tol</span></code>, the optimization code checks the
+dual gap for optimality and continues until it is smaller
+than <code class="docutils literal notranslate"><span class="pre">tol</span></code>.</p>
+</dd>
+<dt><strong>warm_start</strong><span class="classifier">bool, optional</span></dt><dd><p>When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, reuse the solution of the previous call to fit as
+initialization, otherwise, just erase the previous solution.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>coef_</strong><span class="classifier">array, shape (n_features, n_tasks)</span></dt><dd><p>Parameter vector (W in the cost function formula).</p>
+</dd>
+<dt><strong>intercept_</strong><span class="classifier">array, shape (n_tasks,)</span></dt><dd><p>independent term in decision function.</p>
+</dd>
+<dt><strong>n_iter_</strong><span class="classifier">int</span></dt><dd><p>number of iterations run by the coordinate descent solver to reach
+the specified tolerance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="mutar.ReMTW.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">alpha=0.1</em>, <em class="sig-param">beta=0.1</em>, <em class="sig-param">M=None</em>, <em class="sig-param">epsilon=None</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">fit_intercept=True</em>, <em class="sig-param">normalize=False</em>, <em class="sig-param">concomitant=False</em>, <em class="sig-param">max_iter=2000</em>, <em class="sig-param">tol=0.0001</em>, <em class="sig-param">warm_start=False</em>, <em class="sig-param">max_iter_reweighting=1</em>, <em class="sig-param">stable=False</em>, <em class="sig-param">max_iter_ot=20</em>, <em class="sig-param">max_iter_cd=1000</em>, <em class="sig-param">tol_ot=1e-05</em>, <em class="sig-param">tol_cd=1e-05</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">gpu=False</em>, <em class="sig-param">positive=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mutar/estimators.html#ReMTW.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mutar.ReMTW.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mutar.ReMTW.__init__" title="mutar.ReMTW.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(self[, alpha, beta, M, epsilon, …])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(self, X, y)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mutar.ReMTW.get_params" title="mutar.ReMTW.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>(self[, deep])</p></td>
+<td><p>Get parameters for this estimator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mutar.ReMTW.predict" title="mutar.ReMTW.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(self, X)</p></td>
+<td><p>Predict target given unseen data samples.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code>(self)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mutar.ReMTW.score" title="mutar.ReMTW.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(self, X, y[, sample_weight])</p></td>
+<td><p>Returns the coefficient of determination R^2 of the prediction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mutar.ReMTW.set_params" title="mutar.ReMTW.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(self, \*\*params)</p></td>
+<td><p>Set the parameters of this estimator.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="mutar.ReMTW.get_params">
+<code class="sig-name descname">get_params</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mutar.ReMTW.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>deep</strong><span class="classifier">boolean, optional</span></dt><dd><p>If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>params</strong><span class="classifier">mapping of string to any</span></dt><dd><p>Parameter names mapped to their values.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mutar.ReMTW.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em><span class="sig-paren">)</span><a class="headerlink" href="#mutar.ReMTW.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict target given unseen data samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">{array-like}, shape (n_tasks, n_samples, n_features)</span></dt><dd><p>The training input samples.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>y</strong><span class="classifier">ndarray, shape (n_tasks, n_samples)</span></dt><dd><p>Returns the predicted targets.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mutar.ReMTW.score">
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em>, <em class="sig-param">y</em>, <em class="sig-param">sample_weight=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mutar.ReMTW.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the coefficient of determination R^2 of the prediction.</p>
+<p>Computes a score for each regression task.
+The coefficient R^2 is defined as (1 - u/v), where u is the residual
+sum of squares ((y_true - y_pred) ** 2).sum() and v is the total sum
+of squares ((y_true - y_true.mean()) ** 2).sum(). The best possible
+score is 1.0 and it can be negative (because the model can be
+arbitrarily worse). A constant model that always predicts the expected
+value of y, disregarding the input features, would get a R^2 score of
+0.0.</p>
+<p>Parameters
+Xarray-like, shape = (n_tasks, n_samples, n_features)
+Test samples.</p>
+<p>yarray-like, shape = (n_tasks, n_samples)
+True values for y.</p>
+<p>sample_weightarray-like, shape = [n_tasks, n_samples], optional
+Sample weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>array-like, shape = (n_tasks)</dt><dd></dd>
+<dt>R^2 of self.predict(X) wrt. y for each task.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mutar.ReMTW.set_params">
+<code class="sig-name descname">set_params</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">**params</em><span class="sig-paren">)</span><a class="headerlink" href="#mutar.ReMTW.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as pipelines). The latter have parameters of the form
+<code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s possible to update each
+component of a nested object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>self</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Hicham Janati.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+mutar.ReMTW
+===========
+
+.. currentmodule:: mutar
+
+.. autoclass:: ReMTW
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ReMTW.__init__
+      ~ReMTW.fit
+      ~ReMTW.get_params
+      ~ReMTW.predict
+      ~ReMTW.reset
+      ~ReMTW.score
+      ~ReMTW.set_params
+   
+   
+
+   
+   
+   

@@ -95,6 +95,26 @@ Introductory examples.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This example performs classification of Handwritten digits using MTW. Each digit recognition is...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_digits_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_digits.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_digits
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The aim of this example is to show how Dirty models change with the choice of their tuning hype...">
 
 .. only:: html
