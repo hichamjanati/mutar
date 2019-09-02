@@ -77,7 +77,12 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">MuTaR: Multi-task Regression in Python</a><ul>
-<li><a class="reference internal" href="#estimators">Estimators</a></li>
+<li><a class="reference internal" href="#estimators">Estimators</a><ul>
+<li><a class="reference internal" href="#independent-linear-models">1. Independent linear models:</a></li>
+<li><a class="reference internal" href="#group-norms-multi-task-linear-models">2. Group-norms multi-task linear models:</a></li>
+<li><a class="reference internal" href="#optimal-transport-regularized-models">3. Optimal transport regularized models:</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#example">Example</a></li>
 </ul>
@@ -135,21 +140,32 @@ data X for each task.</p>
 <div class="section" id="estimators">
 <h2>Estimators<a class="headerlink" href="#estimators" title="Permalink to this headline">¶</a></h2>
 <p>Mutar models include:</p>
-<ol class="arabic simple">
-<li><p>Group-norms multi-task linear models:</p></li>
-</ol>
+<div class="section" id="independent-linear-models">
+<h3>1. Independent linear models:<a class="headerlink" href="#independent-linear-models" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Independent Lasso estimator</p></li>
+<li><p>Independent Re-weighted (Adaptive) Lasso estimator</p></li>
+</ul>
+</div>
+<div class="section" id="group-norms-multi-task-linear-models">
+<h3>2. Group-norms multi-task linear models:<a class="headerlink" href="#group-norms-multi-task-linear-models" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><cite>GroupLasso</cite>: The Group Lasso is an l1/l2 regularized regression with identical feature supports across tasks <a class="reference external" href="http://pages.stat.wisc.edu/~myuan/papers/glasso.final.pdf">(Yuan and Lin, J. R Statistical Society 2006)</a>.</p></li>
 <li><p><cite>DirtyModel</cite>: Dirty models are a generalization of the Group Lasso with a partial overlap of features. They are defined using a composite l1/l2 and l1 regularization <a class="reference external" href="https://papers.nips.cc/paper/4125-a-dirty-model-for-multi-task-learning?">(Jalali et al., NeurIPS 2010)</a>.</p></li>
 <li><p><cite>MultiLevelLasso</cite> : Multilevel Lasso is a non-convex model that enhances further sparsity and encourages partial overlap with a product decomposition <a class="reference external" href="https://icml.cc/2012/papers/207.pdf">(Lozano and Swirszcz, ICML 2012)</a>.</p></li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p>Independent linear models:</p></li>
-</ol>
+</div>
+<div class="section" id="optimal-transport-regularized-models">
+<h3>3. Optimal transport regularized models:<a class="headerlink" href="#optimal-transport-regularized-models" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>Independent Lasso estimator</p></li>
-<li><p>Independent Re-weighted (Adaptive) Lasso estimator</p></li>
+<li><p><cite>MTW</cite>: Multi-task Wasserstein is a sparse regression model where relevant features across tasks are close according to some defined geometry. <a class="reference external" href="http://proceedings.mlr.press/v89/janati19a.html">(Janati et al., AISTATS 2019)</a>.</p></li>
+<li><dl class="simple">
+<dt><cite>ReMTW</cite>: Reweighted MTW is a non-convex variant of MTW that promotes even more sparsity and reduces the amplitude bias caused by the L1 norm.</dt><dd><p>Both models are implemented with a <cite>concomitant</cite> argument for inferring the standard deviation of each task and adapting the amount of regularization accordingly.</p>
+</dd>
+</dl>
+</li>
 </ul>
+</div>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -179,16 +195,6 @@ data X for each task.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># and target y (n_tasks, n_samples)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="go">(2, 2)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gl</span> <span class="o">=</span> <span class="n">GroupLasso</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">coef</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">coef_</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">coef</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="go">(2, 2)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># coefficients (n_features, n_tasks)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># share the same support</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span>
-<span class="go">[[-0.8  0.6]</span>
-<span class="go"> [-0.  -0. ]]</span>
 </pre></div>
 </div>
 </div>

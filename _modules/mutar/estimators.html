@@ -114,6 +114,7 @@
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">RegressorMixin</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="k">import</span> <span class="n">check_X_y</span><span class="p">,</span> <span class="n">check_array</span><span class="p">,</span> <span class="n">check_is_fitted</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">r2_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.exceptions</span> <span class="k">import</span> <span class="n">ConvergenceWarning</span>
 
 <span class="kn">from</span> <span class="nn">.solvers</span> <span class="k">import</span> <span class="n">solver_dirty</span><span class="p">,</span> <span class="n">solver_lasso</span><span class="p">,</span> <span class="n">solver_mll</span><span class="p">,</span> <span class="n">solver_mtw</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">utils</span>
@@ -535,6 +536,14 @@
 
             <span class="k">if</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="ow">and</span> <span class="n">i</span><span class="p">:</span>
                 <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_reweighting</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">i</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Reweighted objective did not converge.&#39;</span> <span class="o">+</span>
+                          <span class="s1">&#39; You might want to increase &#39;</span> <span class="o">+</span>
+                          <span class="s1">&#39;the number of iterations of reweighting.&#39;</span> <span class="o">+</span>
+                          <span class="s1">&#39; Fitting data with very small alpha&#39;</span> <span class="o">+</span>
+                          <span class="s1">&#39; may cause precision problems.&#39;</span><span class="p">,</span>
+                          <span class="n">ConvergenceWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">coef_</span></div>
 
 
@@ -801,6 +810,9 @@
 <span class="sd">        smaller than ``tol``, the optimization code checks the</span>
 <span class="sd">        dual gap for optimality and continues until it is smaller</span>
 <span class="sd">        than ``tol``.</span>
+<span class="sd">    ot_threshold : float, optional (default 0.)</span>
+<span class="sd">        OT barycenters are computed on the support of coefs &gt; ot_threshold.</span>
+<span class="sd">        1e-7 recommended to speed up Sinkhorn with high dimensional data.</span>
 <span class="sd">    warm_start : bool, optional</span>
 <span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
 <span class="sd">        initialization, otherwise, just erase the previous solution.</span>
@@ -814,14 +826,31 @@
 <span class="sd">    n_iter_ : int</span>
 <span class="sd">        number of iterations run by the coordinate descent solver to reach</span>
 <span class="sd">        the specified tolerance.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; from mutar import ReMTW</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array([[[3, 1], [2, 0], [1, 0]],\</span>
+<span class="sd">                     [[0, 2], [-1, 3], [1, -2]]], dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; coef = np.array([[0., 1.], [0., 2.]])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([x.dot(c) for x, c in zip(X, coef.T)])</span>
+<span class="sd">    &gt;&gt;&gt; y += 0.1</span>
+<span class="sd">    &gt;&gt;&gt; remtw = ReMTW(alpha=0.2, beta=0.1).fit(X, y)</span>
+<span class="sd">    &gt;&gt;&gt; print(remtw.coef_)</span>
+<span class="sd">    [[-0.01067103 -0.12898721]</span>
+<span class="sd">     [ 0.10121529  1.55349281]]</span>
+<span class="sd">    &gt;&gt;&gt; print(remtw.barycenter_)</span>
+<span class="sd">    [0.13211609 0.34980418]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ReMTW.__init__"><a class="viewcode-back" href="../../generated/mutar.ReMTW.html#mutar.ReMTW.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">gamma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">concomitant</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
-                 <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter_reweighting</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter_reweighting</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                  <span class="n">stable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter_ot</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">max_iter_cd</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol_ot</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
-                 <span class="n">tol_cd</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">tol_cd</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">ot_threshold</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">tol_reweighting</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
                          <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
@@ -838,9 +867,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">positive</span> <span class="o">=</span> <span class="n">positive</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol_cd</span> <span class="o">=</span> <span class="n">tol_cd</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tol_reweighting</span> <span class="o">=</span> <span class="n">tol_reweighting</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">concomitant</span> <span class="o">=</span> <span class="n">concomitant</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_reweighting</span> <span class="o">=</span> <span class="n">max_iter_reweighting</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gpu</span> <span class="o">=</span> <span class="n">gpu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ot_threshold</span> <span class="o">=</span> <span class="n">ot_threshold</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b1_</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b2_</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coef1_</span> <span class="o">=</span> <span class="kc">None</span>
@@ -872,12 +903,14 @@
         <span class="n">weights1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span>
         <span class="n">weights2</span> <span class="o">=</span> <span class="n">weights1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">warm_start</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;coef_&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coef1_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coef2_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coef1_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span> <span class="o">/</span> <span class="n">n_features</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coef2_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span> <span class="o">/</span> <span class="n">n_features</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">b1_</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">b2_</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">residuals_</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_tasks</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coef2_</span> <span class="o">*=</span> <span class="mf">0.</span>
         <span class="n">coef_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span>
         <span class="n">beta1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">weights1</span>
         <span class="n">beta2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">weights2</span>
@@ -896,10 +929,10 @@
                            <span class="n">max_iter_ot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter_ot</span><span class="p">,</span>
                            <span class="n">positive</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">,</span>
                            <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">tol_cd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol_cd</span><span class="p">,</span>
-                           <span class="n">gpu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gpu</span><span class="p">)</span>
+                           <span class="n">gpu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gpu</span><span class="p">,</span> <span class="n">ot_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ot_threshold</span><span class="p">)</span>
             <span class="n">coef_</span> <span class="o">=</span> <span class="n">coef1</span> <span class="o">-</span> <span class="n">coef2</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">coef1_</span> <span class="o">=</span> <span class="n">coef1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coef12</span> <span class="o">=</span> <span class="n">coef2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coef2_</span> <span class="o">=</span> <span class="n">coef2</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">coef_</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span> <span class="o">=</span> <span class="n">sigma</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">b1_</span> <span class="o">=</span> <span class="n">b1</span>
@@ -912,14 +945,20 @@
             <span class="n">obj</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">n_samples</span> <span class="o">*</span> <span class="p">(</span><span class="n">R</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">obj</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="p">(</span><span class="n">coef1</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">coef2</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loss_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="ow">and</span> <span class="n">i</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol_reweighting</span> <span class="ow">and</span> <span class="n">i</span><span class="p">:</span>
                 <span class="k">break</span>
             <span class="n">weights1</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="p">(</span><span class="n">coef1</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
             <span class="n">beta1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">weights1</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">:</span>
                 <span class="n">weights2</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="p">(</span><span class="n">coef2</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
                 <span class="n">beta2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">weights2</span>
-
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_reweighting</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">i</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Reweighted objective did not converge.&#39;</span> <span class="o">+</span>
+                          <span class="s1">&#39; You might want to increase &#39;</span> <span class="o">+</span>
+                          <span class="s1">&#39;the number of iterations of reweighting.&#39;</span> <span class="o">+</span>
+                          <span class="s1">&#39; Fitting data with very small alpha and beta&#39;</span> <span class="o">+</span>
+                          <span class="s1">&#39; may cause precision problems.&#39;</span><span class="p">,</span>
+                          <span class="n">ConvergenceWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">barycenter1_</span> <span class="o">=</span> <span class="n">bar1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">barycenter2_</span> <span class="o">=</span> <span class="n">bar2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">barycenter_</span> <span class="o">=</span> <span class="n">bar1</span> <span class="o">-</span> <span class="n">bar2</span>
@@ -1025,6 +1064,9 @@
 <span class="sd">    warm_start : bool, optional</span>
 <span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
 <span class="sd">        initialization, otherwise, just erase the previous solution.</span>
+<span class="sd">    ot_threshold : float, optional (default 0.)</span>
+<span class="sd">        OT barycenters are computed on the support of coefs &gt; ot_threshold.</span>
+<span class="sd">        1e-7 recommended to speed up Sinkhorn with high dimensional data.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -1035,6 +1077,22 @@
 <span class="sd">    n_iter_ : int</span>
 <span class="sd">        number of iterations run by the coordinate descent solver to reach</span>
 <span class="sd">        the specified tolerance.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; from mutar import MTW</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; X = np.array([[[3, 1], [2, 0], [1, 0]],\</span>
+<span class="sd">                     [[0, 2], [-1, 3], [1, -2]]], dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; coef = np.array([[1., 1.], [0., -1]])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([x.dot(c) for x, c in zip(X, coef.T)])</span>
+<span class="sd">    &gt;&gt;&gt; y += 0.1</span>
+<span class="sd">    &gt;&gt;&gt; mtw = MTW(alpha=1., beta=1.).fit(X, y)</span>
+<span class="sd">    &gt;&gt;&gt; print(mtw.coef_)</span>
+<span class="sd">    [[ 0.28727587  0.49165381]</span>
+<span class="sd">     [ 0.04883213 -0.93324644]]</span>
+<span class="sd">    &gt;&gt;&gt; print(mtw.barycenter_)</span>
+<span class="sd">    [ 0.10630429 -0.13313143]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MTW.__init__"><a class="viewcode-back" href="../../generated/mutar.MTW.html#mutar.MTW.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1042,7 +1100,7 @@
                  <span class="n">concomitant</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
                  <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter_ot</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
                  <span class="n">max_iter_cd</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol_ot</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">tol_cd</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                 <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ot_threshold</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">,</span>
                          <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">max_iter_ot</span><span class="o">=</span><span class="n">max_iter_ot</span><span class="p">,</span>
@@ -1050,7 +1108,7 @@
                          <span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
                          <span class="n">gpu</span><span class="o">=</span><span class="n">gpu</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="n">positive</span><span class="p">,</span>
                          <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
-                         <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
+                         <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span> <span class="n">ot_threshold</span><span class="o">=</span><span class="n">ot_threshold</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_reweighting</span> <span class="o">=</span> <span class="mi">1</span></div></div>
 </pre></div>
 

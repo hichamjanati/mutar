@@ -14,8 +14,7 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Hyperparameters of Dirty models" href="plot_dirty_tuning.html" />
-    <link rel="prev" title="Comparison of mixed-norm models" href="plot_mixed_norms.html" />
+    <link rel="prev" title="Hyperparameters of Dirty models" href="plot_dirty_tuning.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -122,11 +121,12 @@
 <p>This example performs classification of Handwritten digits using MTW.
 Each digit recognition is learned as a sparse regression task. This example
 can be used to reproduce the results of (Janati et al., Aistats‘19).</p>
+<p>Reweighting reduces the bias amplitude and highlights the sharp features.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">download</span> <span class="k">import</span> <span class="n">download</span>
 
-<span class="kn">from</span> <span class="nn">mutar</span> <span class="k">import</span> <span class="n">MTW</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">mutar</span> <span class="k">import</span> <span class="n">ReMTW</span><span class="p">,</span> <span class="n">MTW</span><span class="p">,</span> <span class="n">utils</span>
 
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 
@@ -140,8 +140,7 @@ can be used to reproduce the results of (Janati et al., Aistats‘19).</p>
 <span class="n">n_features</span> <span class="o">=</span> <span class="mi">240</span>
 
 <span class="c1"># take only 3 tasks to run example fast</span>
-<span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
-<span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
 <span class="n">n_tasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
 <span class="n">mtgl_only</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">positive</span> <span class="o">=</span> <span class="kc">False</span>
@@ -157,41 +156,15 @@ labels ‘Y’ accordingly</p>
     <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;./data&#39;</span><span class="p">)</span>
 <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://archive.ics.uci.edu/ml/machine-learning-databases/&quot;</span>
 <span class="n">url</span> <span class="o">+=</span> <span class="s2">&quot;mfeat/mfeat-pix&quot;</span>
-<span class="n">path</span> <span class="o">=</span> <span class="n">download</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;.data/digits.txt&quot;</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;.data/digits.txt&quot;</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">download</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;.data/digits.txt&quot;</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">Xraw</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.loadtxt.html#numpy.loadtxt" title="View documentation for numpy.loadtxt"><span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span></a><span class="p">(</span><span class="s2">&quot;.data/digits.txt&quot;</span><span class="p">)</span>
 <span class="n">Xraw</span> <span class="o">=</span> <span class="n">Xraw</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">240</span><span class="p">)</span>
 <span class="n">yraw</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2000</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
     <span class="n">yraw</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">200</span> <span class="o">*</span> <span class="n">k</span><span class="p">:</span> <span class="mi">200</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.</span>
 <span class="n">yraw</span> <span class="o">=</span> <span class="n">yraw</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading data from http://archive.ics.uci.edu/ml/machine-learning-databases/mfeat/mfeat-pix (1.4 MB)
-
-
-file_sizes:   0%|                                   | 0.00/1.44M [00:00&lt;?, ?B/s]
-file_sizes:   2%|4                          | 24.6k/1.44M [00:00&lt;00:11, 118kB/s]
-file_sizes:   3%|9                          | 49.2k/1.44M [00:00&lt;00:10, 128kB/s]
-file_sizes:   7%|##                          | 106k/1.44M [00:00&lt;00:08, 159kB/s]
-file_sizes:  12%|###3                        | 172k/1.44M [00:00&lt;00:06, 195kB/s]
-file_sizes:  16%|####6                       | 238k/1.44M [00:00&lt;00:05, 232kB/s]
-file_sizes:  20%|#####5                      | 287k/1.44M [00:00&lt;00:04, 253kB/s]
-file_sizes:  23%|######5                     | 336k/1.44M [00:01&lt;00:03, 296kB/s]
-file_sizes:  30%|########4                   | 434k/1.44M [00:01&lt;00:03, 331kB/s]
-file_sizes:  35%|#########7                  | 500k/1.44M [00:01&lt;00:02, 354kB/s]
-file_sizes:  40%|###########2                | 582k/1.44M [00:01&lt;00:02, 391kB/s]
-file_sizes:  45%|############5               | 647k/1.44M [00:01&lt;00:01, 402kB/s]
-file_sizes:  51%|##############1             | 729k/1.44M [00:01&lt;00:01, 432kB/s]
-file_sizes:  56%|###############7            | 811k/1.44M [00:02&lt;00:01, 459kB/s]
-file_sizes:  62%|#################3          | 893k/1.44M [00:02&lt;00:01, 478kB/s]
-file_sizes:  69%|###################2        | 991k/1.44M [00:02&lt;00:00, 509kB/s]
-file_sizes:  73%|###################7       | 1.06M/1.44M [00:02&lt;00:00, 486kB/s]
-file_sizes:  81%|#####################9     | 1.17M/1.44M [00:02&lt;00:00, 540kB/s]
-file_sizes:  88%|#######################7   | 1.27M/1.44M [00:02&lt;00:00, 563kB/s]
-file_sizes:  93%|#########################  | 1.34M/1.44M [00:03&lt;00:00, 516kB/s]
-file_sizes: 100%|###########################| 1.44M/1.44M [00:03&lt;00:00, 557kB/s]
-Successfully downloaded file to .data/digits.txt
 </pre></div>
 </div>
 <p>Each digit corresponds to a task. Reshape data to fit a multi-task
@@ -226,14 +199,16 @@ Here the design matrix X is the same for all tasks.”“”</p>
 </pre></div>
 </div>
 <p>Create an MTW instance and fit</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epsilon</span> <span class="o">=</span> <span class="mf">10.</span> <span class="o">/</span> <span class="n">n_features</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epsilon</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">n_features</span>
 <span class="n">betamax</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Xcv</span><span class="p">,</span> <span class="n">ycv</span><span class="p">)])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.2</span>
-<span class="n">beta</span> <span class="o">=</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="n">betamax</span> <span class="o">/</span> <span class="n">n_samples</span>
-<span class="n">gamma</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">compute_gamma</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
-<span class="n">mtw</span> <span class="o">=</span> <span class="n">MTW</span><span class="p">(</span><span class="n">M</span><span class="o">=</span><span class="n">M_</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">)</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">betamax</span> <span class="o">/</span> <span class="n">n_samples</span>
+<span class="n">gamma</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">compute_gamma</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">M_</span><span class="p">)</span>
+<span class="n">mtw</span> <span class="o">=</span> <span class="n">MTW</span><span class="p">(</span><span class="n">M</span><span class="o">=</span><span class="n">M_</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span>
+          <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="n">mtw</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xcv</span><span class="p">,</span> <span class="n">ycv</span><span class="p">)</span>
+
 <span class="n">coefs_</span> <span class="o">=</span> <span class="n">mtw</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">ypred</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.argmax.html#numpy.argmax" title="View documentation for numpy.argmax"><span class="n">np</span><span class="o">.</span><span class="n">argmax</span></a><span class="p">(</span><span class="n">Xvalid</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">coefs_</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">errors</span> <span class="o">=</span> <span class="p">(</span><span class="n">ypred</span> <span class="o">!=</span> <span class="n">yvalid</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_tasks</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -243,8 +218,47 @@ Here the design matrix X is the same for all tasks.”“”</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Classification error for predicting digits [0, 1, 2]:
-[0.01176471 0.02941176 0.        ]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Classification error for predicting digits [0, 1, 2, 3, 4, 5, 6]:
+[0.01176471 0.06470588 0.02941176 0.18235294 0.58235294 0.14117647
+ 0.15882353]
+</pre></div>
+</div>
+<p>Imshow coefficients</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">largecoef</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.zeros.html#numpy.zeros" title="View documentation for numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="n">n_tasks</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">24</span><span class="p">))</span>
+<span class="n">coefs_</span> <span class="o">=</span> <span class="n">mtw</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="c1"># coefs_ /= coefs_.max(axis=0)[None, :]</span>
+<span class="n">coefs_</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.clip.html#numpy.clip" title="View documentation for numpy.clip"><span class="n">np</span><span class="o">.</span><span class="n">clip</span></a><span class="p">(</span><span class="n">coefs_</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">coefs_</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.swapaxes.html#numpy.swapaxes" title="View documentation for numpy.swapaxes"><span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span></a><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">largecoef</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">19</span><span class="p">][:,</span> <span class="p">:,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">20</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+
+<span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="View documentation for matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">coef</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">largecoef</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.log.html#numpy.log" title="View documentation for numpy.log"><span class="n">np</span><span class="o">.</span><span class="n">log</span></a><span class="p">(</span><span class="n">coef</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;hot&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.title.html#matplotlib.pyplot.title" title="View documentation for matplotlib.pyplot.title"><span class="n">plt</span><span class="o">.</span><span class="n">title</span></a><span class="p">(</span><span class="s2">&quot;MTW&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_digits_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_digits_001.png" />
+<p>Do the same thing with Reweighted MTW</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mtw</span> <span class="o">=</span> <span class="n">ReMTW</span><span class="p">(</span><span class="n">M</span><span class="o">=</span><span class="n">M_</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span>
+            <span class="n">tol_reweighting</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">mtw</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xcv</span><span class="p">,</span> <span class="n">ycv</span><span class="p">)</span>
+<span class="n">coefs_</span> <span class="o">=</span> <span class="n">mtw</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="n">ypred</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.argmax.html#numpy.argmax" title="View documentation for numpy.argmax"><span class="n">np</span><span class="o">.</span><span class="n">argmax</span></a><span class="p">(</span><span class="n">Xvalid</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">coefs_</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">errors</span> <span class="o">=</span> <span class="p">(</span><span class="n">ypred</span> <span class="o">!=</span> <span class="n">yvalid</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_tasks</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Classification error for predicting digits </span><span class="si">{tasks}</span><span class="s2">:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Classification error for predicting digits [0, 1, 2, 3, 4, 5, 6]:
+[0.01176471 0.06470588 0.04705882 0.24117647 0.64117647 0.17058824
+ 0.18235294]
 </pre></div>
 </div>
 <p>Imshow coefficients</p>
@@ -261,12 +275,13 @@ Here the design matrix X is the same for all tasks.”“”</p>
     <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.log.html#numpy.log" title="View documentation for numpy.log"><span class="n">np</span><span class="o">.</span><span class="n">log</span></a><span class="p">(</span><span class="n">coef</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;hot&quot;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.title.html#matplotlib.pyplot.title" title="View documentation for matplotlib.pyplot.title"><span class="n">plt</span><span class="o">.</span><span class="n">title</span></a><span class="p">(</span><span class="s2">&quot;Reweighted MTW&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_plot_digits_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_digits_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.811 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  19 MB</p>
+<img alt="../_images/sphx_glr_plot_digits_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_digits_002.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.390 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  28 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-digits-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/d59bc6e7ad004b23e7786ea160564809/plot_digits.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_digits.py</span></code></a></p>

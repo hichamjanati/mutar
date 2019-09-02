@@ -15,6 +15,8 @@ This example performs classification of Handwritten digits using MTW.
 Each digit recognition is learned as a sparse regression task. This example
 can be used to reproduce the results of (Janati et al., Aistats'19).
 
+Reweighting reduces the bias amplitude and highlights the sharp features.
+
 
 .. code-block:: default
 
@@ -23,7 +25,7 @@ can be used to reproduce the results of (Janati et al., Aistats'19).
     import os
     from download import download
 
-    from mutar import MTW, utils
+    from mutar import ReMTW, MTW, utils
 
     from matplotlib import pyplot as plt
 
@@ -37,8 +39,7 @@ can be used to reproduce the results of (Janati et al., Aistats'19).
     n_features = 240
 
     # take only 3 tasks to run example fast
-    tasks = [0, 1, 2, 4, 5, 6]
-    tasks = [0, 1, 2]
+    tasks = [0, 1, 2, 3, 4, 5, 6]
     n_tasks = len(tasks)
     mtgl_only = False
     positive = False
@@ -68,7 +69,9 @@ labels 'Y' accordingly
         os.mkdir('./data')
     url = "http://archive.ics.uci.edu/ml/machine-learning-databases/"
     url += "mfeat/mfeat-pix"
-    path = download(url, ".data/digits.txt", replace=True)
+
+    if not os.path.exists(".data/digits.txt"):
+        path = download(url, ".data/digits.txt", replace=True)
     Xraw = np.loadtxt(".data/digits.txt")
     Xraw = Xraw.reshape(10, 200, 240)
     yraw = np.zeros((10, 2000))
@@ -79,17 +82,6 @@ labels 'Y' accordingly
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Downloading data from http://archive.ics.uci.edu/ml/machine-learning-databases/mfeat/mfeat-pix (1.4 MB)
-
-    file_sizes:   0%|                                   | 0.00/1.44M [00:00<?, ?B/s]    file_sizes:   2%|4                          | 24.6k/1.44M [00:00<00:11, 118kB/s]    file_sizes:   3%|9                          | 49.2k/1.44M [00:00<00:10, 128kB/s]    file_sizes:   7%|##                          | 106k/1.44M [00:00<00:08, 159kB/s]    file_sizes:  12%|###3                        | 172k/1.44M [00:00<00:06, 195kB/s]    file_sizes:  16%|####6                       | 238k/1.44M [00:00<00:05, 232kB/s]    file_sizes:  20%|#####5                      | 287k/1.44M [00:00<00:04, 253kB/s]    file_sizes:  23%|######5                     | 336k/1.44M [00:01<00:03, 296kB/s]    file_sizes:  30%|########4                   | 434k/1.44M [00:01<00:03, 331kB/s]    file_sizes:  35%|#########7                  | 500k/1.44M [00:01<00:02, 354kB/s]    file_sizes:  40%|###########2                | 582k/1.44M [00:01<00:02, 391kB/s]    file_sizes:  45%|############5               | 647k/1.44M [00:01<00:01, 402kB/s]    file_sizes:  51%|##############1             | 729k/1.44M [00:01<00:01, 432kB/s]    file_sizes:  56%|###############7            | 811k/1.44M [00:02<00:01, 459kB/s]    file_sizes:  62%|#################3          | 893k/1.44M [00:02<00:01, 478kB/s]    file_sizes:  69%|###################2        | 991k/1.44M [00:02<00:00, 509kB/s]    file_sizes:  73%|###################7       | 1.06M/1.44M [00:02<00:00, 486kB/s]    file_sizes:  81%|#####################9     | 1.17M/1.44M [00:02<00:00, 540kB/s]    file_sizes:  88%|#######################7   | 1.27M/1.44M [00:02<00:00, 563kB/s]    file_sizes:  93%|#########################  | 1.34M/1.44M [00:03<00:00, 516kB/s]    file_sizes: 100%|###########################| 1.44M/1.44M [00:03<00:00, 557kB/s]
-    Successfully downloaded file to .data/digits.txt
 
 
 
@@ -150,14 +142,16 @@ Create an MTW instance and fit
 .. code-block:: default
 
 
-    epsilon = 10. / n_features
+    epsilon = 1. / n_features
     betamax = np.array([abs(x.T.dot(y)) for x, y in zip(Xcv, ycv)]).max()
-    alpha = 0.2
-    beta = 0.03 * betamax / n_samples
-    gamma = utils.compute_gamma(0.8, M)
-    mtw = MTW(M=M_, alpha=alpha, beta=beta, epsilon=epsilon, gamma=gamma)
+    alpha = 0.5
+    beta = 0.2 * betamax / n_samples
+    gamma = utils.compute_gamma(0.9, M_)
+    mtw = MTW(M=M_, alpha=alpha, beta=beta, epsilon=epsilon, gamma=gamma,
+              normalize=False)
 
     mtw.fit(Xcv, ycv)
+
     coefs_ = mtw.coef_.copy()
     ypred = np.argmax(Xvalid.dot(coefs_), axis=1)
     errors = (ypred != yvalid).reshape(n_tasks, -1).mean(axis=1)
@@ -175,8 +169,73 @@ Create an MTW instance and fit
 
  .. code-block:: none
 
-    Classification error for predicting digits [0, 1, 2]:
-    [0.01176471 0.02941176 0.        ]
+    Classification error for predicting digits [0, 1, 2, 3, 4, 5, 6]:
+    [0.01176471 0.06470588 0.02941176 0.18235294 0.58235294 0.14117647
+     0.15882353]
+
+
+
+Imshow coefficients
+
+
+.. code-block:: default
+
+
+    largecoef = np.zeros((n_tasks, 24, 24))
+    coefs_ = mtw.coef_.copy()
+    # coefs_ /= coefs_.max(axis=0)[None, :]
+    coefs_ = np.clip(coefs_, 0, None)
+    c = coefs_.reshape(16, 15, n_tasks)
+    c = np.swapaxes(c, 0, 2)
+    largecoef[:, 4:19][:, :, 4:20] = c
+
+    f, axes = plt.subplots(1, n_tasks)
+    for ax, coef in zip(axes.T, largecoef):
+        ax.imshow(np.log(coef.T + 0.1), cmap="hot")
+        ax.set_xticks([])
+        ax.set_yticks([])
+    plt.title("MTW")
+    plt.show()
+
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_digits_001.png
+    :class: sphx-glr-single-img
+
+
+
+
+Do the same thing with Reweighted MTW
+
+
+.. code-block:: default
+
+
+    mtw = ReMTW(M=M_, alpha=alpha, beta=beta, epsilon=epsilon, gamma=gamma,
+                tol_reweighting=1e-6)
+    mtw.fit(Xcv, ycv)
+    coefs_ = mtw.coef_.copy()
+
+    ypred = np.argmax(Xvalid.dot(coefs_), axis=1)
+    errors = (ypred != yvalid).reshape(n_tasks, -1).mean(axis=1)
+
+    print(f"Classification error for predicting digits {tasks}:")
+    print(errors)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Classification error for predicting digits [0, 1, 2, 3, 4, 5, 6]:
+    [0.01176471 0.06470588 0.04705882 0.24117647 0.64117647 0.17058824
+     0.18235294]
 
 
 
@@ -199,11 +258,12 @@ Imshow coefficients
         ax.imshow(np.log(coef.T + 0.1), cmap="hot")
         ax.set_xticks([])
         ax.set_yticks([])
+    plt.title("Reweighted MTW")
     plt.show()
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_digits_001.png
+.. image:: /auto_examples/images/sphx_glr_plot_digits_002.png
     :class: sphx-glr-single-img
 
 
@@ -212,9 +272,9 @@ Imshow coefficients
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  6.811 seconds)
+   **Total running time of the script:** ( 0 minutes  1.390 seconds)
 
-**Estimated memory usage:**  19 MB
+**Estimated memory usage:**  28 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_digits.py:

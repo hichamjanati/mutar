@@ -6,13 +6,15 @@ MTW Handwritten Digits Classification
 This example performs classification of Handwritten digits using MTW.
 Each digit recognition is learned as a sparse regression task. This example
 can be used to reproduce the results of (Janati et al., Aistats'19).
+
+Reweighting reduces the bias amplitude and highlights the sharp features.
 """
 
 import numpy as np
 import os
 from download import download
 
-from mutar import MTW, utils
+from mutar import ReMTW, MTW, utils
 
 from matplotlib import pyplot as plt
 
@@ -26,8 +28,7 @@ n_samples = 30
 n_features = 240
 
 # take only 3 tasks to run example fast
-tasks = [0, 1, 2, 4, 5, 6]
-tasks = [0, 1, 2]
+tasks = [0, 1, 2, 3, 4, 5, 6]
 n_tasks = len(tasks)
 mtgl_only = False
 positive = False
@@ -40,7 +41,9 @@ if not os.path.exists('./data'):
     os.mkdir('./data')
 url = "http://archive.ics.uci.edu/ml/machine-learning-databases/"
 url += "mfeat/mfeat-pix"
-path = download(url, ".data/digits.txt", replace=True)
+
+if not os.path.exists(".data/digits.txt"):
+    path = download(url, ".data/digits.txt", replace=True)
 Xraw = np.loadtxt(".data/digits.txt")
 Xraw = Xraw.reshape(10, 200, 240)
 yraw = np.zeros((10, 2000))
@@ -84,15 +87,50 @@ M_ /= np.median(M_)
 ###############################################################################
 # Create an MTW instance and fit
 
-epsilon = 10. / n_features
+epsilon = 1. / n_features
 betamax = np.array([abs(x.T.dot(y)) for x, y in zip(Xcv, ycv)]).max()
-alpha = 0.2
-beta = 0.03 * betamax / n_samples
-gamma = utils.compute_gamma(0.8, M)
-mtw = MTW(M=M_, alpha=alpha, beta=beta, epsilon=epsilon, gamma=gamma)
+alpha = 0.5
+beta = 0.2 * betamax / n_samples
+gamma = utils.compute_gamma(0.9, M_)
+mtw = MTW(M=M_, alpha=alpha, beta=beta, epsilon=epsilon, gamma=gamma,
+          normalize=False)
 
 mtw.fit(Xcv, ycv)
+
 coefs_ = mtw.coef_.copy()
+ypred = np.argmax(Xvalid.dot(coefs_), axis=1)
+errors = (ypred != yvalid).reshape(n_tasks, -1).mean(axis=1)
+
+print(f"Classification error for predicting digits {tasks}:")
+print(errors)
+
+###############################################################################
+# Imshow coefficients
+
+largecoef = np.zeros((n_tasks, 24, 24))
+coefs_ = mtw.coef_.copy()
+# coefs_ /= coefs_.max(axis=0)[None, :]
+coefs_ = np.clip(coefs_, 0, None)
+c = coefs_.reshape(16, 15, n_tasks)
+c = np.swapaxes(c, 0, 2)
+largecoef[:, 4:19][:, :, 4:20] = c
+
+f, axes = plt.subplots(1, n_tasks)
+for ax, coef in zip(axes.T, largecoef):
+    ax.imshow(np.log(coef.T + 0.1), cmap="hot")
+    ax.set_xticks([])
+    ax.set_yticks([])
+plt.title("MTW")
+plt.show()
+
+##############################################################################
+# Do the same thing with Reweighted MTW
+
+mtw = ReMTW(M=M_, alpha=alpha, beta=beta, epsilon=epsilon, gamma=gamma,
+            tol_reweighting=1e-6)
+mtw.fit(Xcv, ycv)
+coefs_ = mtw.coef_.copy()
+
 ypred = np.argmax(Xvalid.dot(coefs_), axis=1)
 errors = (ypred != yvalid).reshape(n_tasks, -1).mean(axis=1)
 
@@ -115,4 +153,5 @@ for ax, coef in zip(axes.T, largecoef):
     ax.imshow(np.log(coef.T + 0.1), cmap="hot")
     ax.set_xticks([])
     ax.set_yticks([])
+plt.title("Reweighted MTW")
 plt.show()
