@@ -140,6 +140,8 @@
 <span class="sd">        smaller than ``tol``, the optimization code checks the</span>
 <span class="sd">        dual gap for optimality and continues until it is smaller</span>
 <span class="sd">        than ``tol``.</span>
+<span class="sd">    positive : boolean, optional (default False)</span>
+<span class="sd">        If True, coefficients are constrained to be non-negative.</span>
 <span class="sd">    warm_start : bool, optional</span>
 <span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
 <span class="sd">        initialization, otherwise, just erase the previous solution.</span>
@@ -155,7 +157,7 @@
 <span class="sd">        the specified tolerance.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_intercept</span> <span class="o">=</span> <span class="n">fit_intercept</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span> <span class="o">=</span> <span class="n">normalize</span>
@@ -163,6 +165,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">warm_start</span> <span class="o">=</span> <span class="n">warm_start</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">positive</span> <span class="o">=</span> <span class="n">positive</span>
 
     <span class="k">def</span> <span class="nf">_pre_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Normalize and scale the data.&quot;&quot;&quot;</span>
@@ -309,6 +312,8 @@
 <span class="sd">        smaller than ``tol``, the optimization code checks the</span>
 <span class="sd">        dual gap for optimality and continues until it is smaller</span>
 <span class="sd">        than ``tol``.</span>
+<span class="sd">    positive : boolean, optional (default False)</span>
+<span class="sd">        If True, coefficients are constrained to be non-negative.</span>
 <span class="sd">    warm_start : bool, optional</span>
 <span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
 <span class="sd">        initialization, otherwise, just erase the previous solution.</span>
@@ -342,10 +347,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="DirtyModel.__init__"><a class="viewcode-back" href="../../generated/mutar.DirtyModel.html#mutar.DirtyModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
-                         <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
+                         <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="n">positive</span><span class="p">,</span>
+                         <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span></div>
 
@@ -366,7 +372,7 @@
         <span class="n">coef_shared_</span><span class="p">,</span> <span class="n">coef_specific_</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">n_iter</span> <span class="o">=</span> \
             <span class="n">solver_dirty</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">coef_shared_</span><span class="p">,</span> <span class="n">coef_specific_</span><span class="p">,</span>
                          <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
-                         <span class="p">)</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">coef_shared_</span> <span class="o">+</span> <span class="n">coef_specific_</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coef_shared_</span> <span class="o">=</span> <span class="n">coef_shared_</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coef_specific_</span> <span class="o">=</span> <span class="n">coef_specific_</span>
@@ -406,6 +412,8 @@
 <span class="sd">        smaller than ``tol``, the optimization code checks the</span>
 <span class="sd">        dual gap for optimality and continues until it is smaller</span>
 <span class="sd">        than ``tol``.</span>
+<span class="sd">    positive : boolean, optional (default False)</span>
+<span class="sd">        If True, coefficients are constrained to be non-negative.</span>
 <span class="sd">    warm_start : bool, optional</span>
 <span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
 <span class="sd">        initialization, otherwise, just erase the previous solution.</span>
@@ -436,13 +444,13 @@
 <span class="sd">     [0. 0.]]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="GroupLasso.__init__"><a class="viewcode-back" href="../../generated/mutar.GroupLasso.html#mutar.GroupLasso.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="c1"># if beta &gt; alpha, Dirty models are equivalent to a Group Lasso</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">alpha</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span>
                          <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
-                         <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span></div></div>
+                         <span class="n">positive</span><span class="o">=</span><span class="n">positive</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="IndRewLasso"><a class="viewcode-back" href="../../generated/mutar.IndRewLasso.html#mutar.IndRewLasso">[docs]</a><span class="k">class</span> <span class="nc">IndRewLasso</span><span class="p">(</span><span class="n">MultitaskRegression</span><span class="p">):</span>
@@ -478,6 +486,8 @@
 <span class="sd">        smaller than ``tol``, the optimization code checks the</span>
 <span class="sd">        dual gap for optimality and continues until it is smaller</span>
 <span class="sd">        than ``tol``.</span>
+<span class="sd">    positive : boolean, optional (default False)</span>
+<span class="sd">        If True, coefficients are constrained to be non-negative.</span>
 <span class="sd">    warm_start : bool, optional</span>
 <span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
 <span class="sd">        initialization, otherwise, just erase the previous solution.</span>
@@ -510,11 +520,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="IndRewLasso.__init__"><a class="viewcode-back" href="../../generated/mutar.IndRewLasso.html#mutar.IndRewLasso.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">max_iter_reweighting</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
-                 <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
-                         <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+                         <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="n">positive</span><span class="p">,</span>
+                         <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_reweighting</span> <span class="o">=</span> <span class="n">max_iter_reweighting</span></div>
 
     <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
@@ -525,15 +536,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span>
         <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
         <span class="n">coef_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss_</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter_reweighting</span><span class="p">):</span>
             <span class="n">Xw</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">weights</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="n">coef_</span> <span class="o">=</span> <span class="n">solver_lasso</span><span class="p">(</span><span class="n">Xw</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">)</span>
+            <span class="n">coef_</span> <span class="o">=</span> <span class="n">solver_lasso</span><span class="p">(</span><span class="n">Xw</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
+                                 <span class="n">positive</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
             <span class="n">coef_</span> <span class="o">=</span> <span class="n">coef_</span> <span class="o">*</span> <span class="n">weights</span>
             <span class="n">err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">coef_</span> <span class="o">-</span> <span class="n">coef_old</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
             <span class="n">err</span> <span class="o">/=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">coef_</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">coef_old</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mf">1.</span><span class="p">)</span>
             <span class="n">coef_old</span> <span class="o">=</span> <span class="n">coef_</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">weights</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">coef_</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
-
+            <span class="n">weights</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">coef_</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">coef_</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">n_samples</span>
+            <span class="n">obj</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">coef_</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loss_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="ow">and</span> <span class="n">i</span><span class="p">:</span>
                 <span class="k">break</span>
 
@@ -575,6 +590,8 @@
 <span class="sd">        The maximum number of inner loop iterations</span>
 <span class="sd">    max_iter_reweighting : int, optional</span>
 <span class="sd">        Maximum number of reweighting steps i.e outer loop iterations</span>
+<span class="sd">    positive : boolean, optional (default False)</span>
+<span class="sd">        If True, coefficients are constrained to be non-negative.</span>
 <span class="sd">    tol : float, optional</span>
 <span class="sd">        The tolerance for the optimization: if the updates are</span>
 <span class="sd">        smaller than ``tol``, the optimization code checks the</span>
@@ -611,11 +628,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="IndLasso.__init__"><a class="viewcode-back" href="../../generated/mutar.IndLasso.html#mutar.IndLasso.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
-                         <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span>
+                         <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+                         <span class="n">positive</span><span class="o">=</span><span class="n">positive</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_reweighting</span> <span class="o">=</span> <span class="mi">1</span></div></div>
 
 
@@ -669,6 +686,8 @@
 <span class="sd">        smaller than ``tol``, the optimization code checks the</span>
 <span class="sd">        dual gap for optimality and continues until it is smaller</span>
 <span class="sd">        than ``tol``.</span>
+<span class="sd">    positive : boolean, optional (default False)</span>
+<span class="sd">        If True, coefficients are constrained to be non-negative.</span>
 <span class="sd">    warm_start : bool, optional</span>
 <span class="sd">        When set to ``True``, reuse the solution of the previous call to fit as</span>
 <span class="sd">        initialization, otherwise, just erase the previous solution.</span>
@@ -703,10 +722,11 @@
 <span class="sd">     [ 0.         -1.34038017]]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="MultiLevelLasso.__init__"><a class="viewcode-back" href="../../generated/mutar.MultiLevelLasso.html#mutar.MultiLevelLasso.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
-                         <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
+                         <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="n">positive</span><span class="p">,</span>
+                         <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span></div>
 
     <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
@@ -723,7 +743,8 @@
             <span class="n">coef_specific_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span>
         <span class="n">coef_shared_</span><span class="p">,</span> <span class="n">coef_specific_</span><span class="p">,</span> <span class="n">n_iter</span> <span class="o">=</span> \
             <span class="n">solver_mll</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">coef_shared_</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="n">coef_specific_</span><span class="p">,</span>
-                       <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">)</span>
+                       <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
+                       <span class="n">positive</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">coef_shared_</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">coef_specific_</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coef_shared_</span> <span class="o">=</span> <span class="n">coef_shared_</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coef_specific_</span> <span class="o">=</span> <span class="n">coef_specific_</span>
@@ -838,10 +859,10 @@
 <span class="sd">    &gt;&gt;&gt; y += 0.1</span>
 <span class="sd">    &gt;&gt;&gt; remtw = ReMTW(alpha=0.2, beta=0.1).fit(X, y)</span>
 <span class="sd">    &gt;&gt;&gt; print(remtw.coef_)</span>
-<span class="sd">    [[-0.01067103 -0.12898721]</span>
-<span class="sd">     [ 0.10121529  1.55349281]]</span>
+<span class="sd">    [[-0.01064798 -0.12868387]</span>
+<span class="sd">     [ 0.10112546  1.55361523]]</span>
 <span class="sd">    &gt;&gt;&gt; print(remtw.barycenter_)</span>
-<span class="sd">    [0.13211609 0.34980418]</span>
+<span class="sd">    [0.13216306 0.34976005]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ReMTW.__init__"><a class="viewcode-back" href="../../generated/mutar.ReMTW.html#mutar.ReMTW.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -850,10 +871,11 @@
                  <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter_reweighting</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                  <span class="n">stable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_iter_ot</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">max_iter_cd</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol_ot</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
                  <span class="n">tol_cd</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">ot_threshold</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">tol_reweighting</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+                 <span class="n">ot_threshold</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">tol_reweighting</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
-                         <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
+                         <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="n">positive</span><span class="p">,</span>
+                         <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">M</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
@@ -864,7 +886,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_ot</span> <span class="o">=</span> <span class="n">max_iter_ot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol_ot</span> <span class="o">=</span> <span class="n">tol_ot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">positive</span> <span class="o">=</span> <span class="n">positive</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol_cd</span> <span class="o">=</span> <span class="n">tol_cd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol_reweighting</span> <span class="o">=</span> <span class="n">tol_reweighting</span>
@@ -905,6 +926,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">warm_start</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;coef_&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">coef1_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span> <span class="o">/</span> <span class="n">n_features</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">coef2_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_tasks</span><span class="p">))</span> <span class="o">/</span> <span class="n">n_features</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coef1_</span> <span class="o">*=</span> <span class="mf">0.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coef2_</span> <span class="o">*=</span> <span class="mf">0.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">b1_</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">b2_</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">residuals_</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -942,16 +966,22 @@
             <span class="n">err</span> <span class="o">/=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">coef_</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">coef_old</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mf">1.</span><span class="p">)</span>
             <span class="n">coef_old</span> <span class="o">=</span> <span class="n">coef_</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;fot1&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;fot2&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">obj</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">n_samples</span> <span class="o">*</span> <span class="p">(</span><span class="n">R</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">obj</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">R</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_samples</span>
             <span class="n">obj</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="p">(</span><span class="n">coef1</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">coef2</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loss_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol_reweighting</span> <span class="ow">and</span> <span class="n">i</span><span class="p">:</span>
                 <span class="k">break</span>
-            <span class="n">weights1</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="p">(</span><span class="n">coef1</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
-            <span class="n">beta1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">weights1</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">:</span>
+                <span class="n">weights1</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">coef_</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
+                <span class="n">weights2</span> <span class="o">=</span> <span class="n">weights1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">weights1</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="p">(</span><span class="n">coef1</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
                 <span class="n">weights2</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="p">(</span><span class="n">coef2</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
-                <span class="n">beta2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">weights2</span>
+
+            <span class="n">beta1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">weights1</span>
+            <span class="n">beta2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">weights2</span>
+
         <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_reweighting</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">i</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Reweighted objective did not converge.&#39;</span> <span class="o">+</span>
                           <span class="s1">&#39; You might want to increase &#39;</span> <span class="o">+</span>
