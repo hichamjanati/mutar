@@ -1,5 +1,3 @@
-.. -*- mode: rst -*-
-======================================
 MuTaR: Multi-task Regression in Python
 ======================================
 
@@ -44,15 +42,21 @@ Mutar models include:
 Installation
 ------------
 
-On a miniconda environment:
+To install the last release of MuTaR:
 
+::
+
+    pip install -U mutar
+
+
+To get the current development version:
 ::
 
     git clone https://github.com/hichamjanati/mutar
     cd mutar
     python setup.py develop
 
-Otherwise, we recommend creating this minimal `conda env <https://raw.githubusercontent.com/hichamjanati/mutar/master/environment.yml>`_
+We recommend creating this minimal `conda env <https://raw.githubusercontent.com/hichamjanati/mutar/master/environment.yml>`_
 
 ::
 
