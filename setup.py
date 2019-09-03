@@ -1,7 +1,4 @@
 #! /usr/bin/env python
-"""Multitask regression in Python."""
-
-import codecs
 import os
 
 from setuptools import find_packages, setup
@@ -25,15 +22,14 @@ with open(ver_file) as f:
 
 DISTNAME = 'mutar'
 DESCRIPTION = 'Multi-Task Regression in Python'
-with codecs.open('README.rst', encoding='utf-8-sig') as f:
-    LONG_DESCRIPTION = f.read()
+LONG_DESCRIPTION = open('README.rst').read()
 MAINTAINER = 'H. Janati'
 MAINTAINER_EMAIL = 'hicham.janati@inria.fr'
 URL = 'https://github.com/hichamjanati/mutar'
 LICENSE = 'new BSD'
 DOWNLOAD_URL = 'https://github.com/hichamjanati/mutar'
 VERSION = __version__
-INSTALL_REQUIRES = ['numpy', 'scipy', 'scikit-learn']
+INSTALL_REQUIRES = ['numpy', 'scikit-learn', 'numba>=0.40.1']
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
                'License :: OSI Approved',
@@ -70,6 +66,7 @@ setup(name=DISTNAME,
       version=VERSION,
       download_url=DOWNLOAD_URL,
       long_description=LONG_DESCRIPTION,
+      long_description_content_type='text/x-rst',
       zip_safe=False,  # the package can run out of an .egg file
       classifiers=CLASSIFIERS,
       packages=find_packages(),
