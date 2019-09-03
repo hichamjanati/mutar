@@ -5,6 +5,18 @@ import codecs
 import os
 
 from setuptools import find_packages, setup
+from setuptools.extension import Extension
+from Cython.Build import cythonize
+
+import numpy
+
+extensions = [
+    Extension(
+        "mutar.solver_mtw_cd",
+        ['mutar/solver_mtw_cd.pyx'],
+    ),
+]
+
 
 # get __version__ from _version.py
 ver_file = os.path.join('mutar', '_version.py')
@@ -61,5 +73,7 @@ setup(name=DISTNAME,
       zip_safe=False,  # the package can run out of an .egg file
       classifiers=CLASSIFIERS,
       packages=find_packages(),
+      include_dirs=[numpy.get_include()],
       install_requires=INSTALL_REQUIRES,
-      extras_require=EXTRAS_REQUIRE)
+      extras_require=EXTRAS_REQUIRE,
+      ext_modules=cythonize(extensions))

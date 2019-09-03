@@ -6,10 +6,9 @@ API Documentation
 
 .. currentmodule:: mutar
 
-code
-====
 
 Estimators
+----------
 
 .. autosummary::
    :toctree: generated/
@@ -19,3 +18,5 @@ Estimators
    IndLasso
    IndRewLasso
    MultiLevelLasso
+   MTW
+   ReMTW
