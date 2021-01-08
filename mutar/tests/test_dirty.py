@@ -85,3 +85,28 @@ def test_multitasklasso(gaussian_data, fit_intercept, normalize, alpha):
                              normalize=normalize)
     mtlasso.fit(X[0], y.T)
     assert_allclose(est.coef_, mtlasso.coef_.T, rtol=1e-2)
+
+
+def test_warmstart(gaussian_data):
+
+    X, y = gaussian_data
+    n_samples = y.shape[1]
+
+    Xty = np.array([xx.T.dot(yy) for xx, yy in zip(X, y)])
+    alpha_max = np.linalg.norm(Xty, axis=0).max()
+    alpha1 = 0.6 * alpha_max / n_samples
+    alpha2 = 0.05 * alpha_max / n_samples
+
+    est = DirtyModel(alpha=alpha1, beta=alpha1, warm_start=True, tol=1e-5)
+    est.fit(X, y)
+    est.alpha = alpha2
+    est.fit(X, y)
+    assert hasattr(est, 'is_fitted_')
+    assert_allclose(est.coef_specific_, 0.)
+    coef1 = est.coef_.copy()
+
+    est = DirtyModel(alpha=alpha2, beta=alpha1, tol=1e-5)
+    est.fit(X, y)
+    coef2 = est.coef_
+
+    assert_allclose(coef1, coef2, 1e-4)
