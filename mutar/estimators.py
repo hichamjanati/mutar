@@ -258,12 +258,12 @@ class DirtyModel(MultitaskRegression):
                           "estimator", stacklevel=2)
 
         if not self.warm_start or not hasattr(self, "coef_"):
-            coef_shared_ = np.zeros((n_features, n_tasks), dtype=X.dtype,
-                                    order='F')
-            coef_specific_ = np.zeros((n_features, n_tasks), dtype=X.dtype,
-                                      order='F')
+            self.coef_shared_ = np.zeros((n_features, n_tasks), dtype=X.dtype,
+                                         order='F')
+            self.coef_specific_ = np.zeros((n_features, n_tasks),
+                                           dtype=X.dtype, order='F')
         coef_shared_, coef_specific_, R, n_iter = \
-            solver_dirty(X, y, coef_shared_, coef_specific_,
+            solver_dirty(X, y, self.coef_shared_, self.coef_specific_,
                          self.alpha, self.beta, self.max_iter, self.tol,
                          self.positive)
         self.coef_ = coef_shared_ + coef_specific_
